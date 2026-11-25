@@ -1,0 +1,73 @@
+% ==============================================================================
+% Chapter 1: Introduction and Problem Formulation (Clean Skeleton)
+% Owner: Member 1 (TV1) | Target length: ~4-5 pages
+% ==============================================================================
+
+\chapter{Giới thiệu bài toán và định hướng nghiên cứu}
+\label{chap:intro}
+
+\draftnote[TV1]{Chương 1 dài khoảng 4--5 trang. Viết mạch lạc bằng tiếng Việt học thuật, rõ ràng, tránh liệt kê gạch đầu dòng quá dày. Dẫn dắt tự nhiên từ hạn chế của LLM/TextRAG đến bài toán Multimodal RAG và câu chuyện gắn kết 5 bài báo.}
+
+% ------------------------------------------------------------------------------
+\section{Bối cảnh và động lực nghiên cứu}
+\label{sec:intro_context}
+
+\draftnote[TV1]{Phân tích 3 hạn chế cố hữu của LLM (ảo giác thông tin / Hallucination, tri thức lỗi thời / Outdated Knowledge, khó xác minh nguồn / Lack of Verifiable Reasoning). Giải thích lý do cần mở rộng từ RAG thuần văn bản sang Multimodal RAG khi dữ liệu thực tế bao gồm tài liệu PDF có bố cục phức tạp, biểu đồ, bảng biểu, hình ảnh, âm thanh và video.}
+
+% ------------------------------------------------------------------------------
+\section{Phát biểu bài toán Multimodal RAG}
+\label{sec:intro_problem}
+
+\draftnote[TV1]{Trình bày định nghĩa bài toán kèm mô hình toán học 3 bước (Mã hóa dữ liệu $z_i$, Truy xuất tập ngữ cảnh $X$, Tạo sinh câu trả lời $r = G(q, X)$) trích dẫn từ bài khảo sát \texttt{\textbackslash cite\{abootorabi2025ask\}}. Nêu rõ Đầu vào, Đầu ra và 3--4 ví dụ minh họa thực tế gắn với các tầng bài toán ở Chương 3 (ví dụ: truy xuất Clip vs Video, tài liệu PDF có bảng/biểu đồ, kịch bản mâu thuẫn giữa ảnh và văn bản truy xuất).}
+
+% ------------------------------------------------------------------------------
+\section{Các thách thức cốt lõi và bài toán con cần giải quyết}
+\label{sec:intro_challenges}
+
+\draftnote[TV1]{Trình bày ngắn gọn nhưng rõ trọng tâm 4 thách thức lớn: (1) Modality Gap \& lựa chọn độ phân giải (Granularity Selection); (2) Nút thắt tiền xử lý PDF/OCR, lỗi lan truyền và thất thoát thông tin thị giác; (3) Xung đột tri thức liên nguồn (PRKI, VTKI) \& thiên lệch phương thức; (4) Đánh đổi giữa độ chính xác, dung lượng lưu trữ và độ trễ truy vấn/suy luận.}
+
+% ------------------------------------------------------------------------------
+\section{Chiến lược lựa chọn bài báo và cấu trúc báo cáo}
+\label{sec:intro_strategy}
+
+\draftnote[TV1]{Giải thích chiến lược chọn 5 bài báo uy tín (ACL 2025, ICLR 2025, ACL 2026): dùng 1 bài Survey làm bản đồ tổng quan + 3 bài giải 3 tầng bổ trợ (Pre-Retrieval Routing $\rightarrow$ Visual Document Retrieval/Reading $\rightarrow$ Post-Retrieval Reconciliation) + 1 cặp so sánh đối chứng trực tiếp (ColPali vs. VisRAG). Hoàn thiện Bảng~\ref{tab:selected_papers}, chèn sơ đồ định vị tại Hình~\ref{fig:pipeline_overview}, rồi viết 1 đoạn ngắn giới thiệu bố cục các chương tiếp theo.}
+
+\begin{table}[H]
+\centering
+\small
+\caption[Danh sách 5 bài báo trọng tâm và vai trò trong báo cáo]{Danh sách 5 bài báo trọng tâm và vai trò trong cấu trúc báo cáo.}
+\label{tab:selected_papers}
+\renewcommand{\arraystretch}{1.24}
+\begin{tabularx}{\textwidth}{@{}M{0.9cm}P{3.6cm}P{2.5cm}P{2.4cm}L@{}}
+\toprule
+\rowcolor{tblhead}
+\thead{STT} & \thead{Tên bài báo} & \thead{Tác giả} & \thead{Hội nghị / Năm} & \thead{Vai trò trong hệ thống} \\
+\midrule
+1 & \dots & \dots & \dots & \dots \\
+\rowcolor{zebrabg}
+2 & \dots & \dots & \dots & \dots \\
+3 & \dots & \dots & \dots & \dots \\
+\rowcolor{zebrabg}
+4 & \dots & \dots & \dots & \dots \\
+5 & \dots & \dots & \dots & \dots \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% Optional vector pipeline diagram available in figures/pipeline_overview.tex
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+    \node[
+        rectangle, draw=black!45, dashed, fill=boxbg,
+        minimum width=0.95\textwidth, minimum height=3.2cm,
+        align=center, font=\small\color{muted}
+    ] {
+        \textbf{[Khung chèn Hình 1.1: Sơ đồ định vị 5 bài báo trên pipeline Multimodal RAG]}\\[4pt]
+        \footnotesize Thay khung này bằng ảnh nhóm tự vẽ (\texttt{\textbackslash includegraphics})\\
+        hoặc bỏ chú thích dòng \texttt{\textbackslash input\{figures/pipeline\_overview\}} để tham khảo sơ đồ TikZ mẫu.
+    };
+\end{tikzpicture}
+\caption[Định vị 5 bài báo nghiên cứu trong đường ống Multimodal RAG]{Định vị 5 bài báo nghiên cứu trong đường ống xử lý Multimodal RAG đầu--cuối.}
+\label{fig:pipeline_overview}
+\end{figure}

@@ -1,0 +1,24 @@
+% ==============================================================================
+% Section 3.3: Post-Retrieval Knowledge Reconciliation - CoRe-MMRAG (Clean Skeleton)
+% Owner: Member 3 (TV3) | Target length: ~3-3.5 pages
+% ==============================================================================
+
+\section{Tầng Post-Retrieval: Hòa giải xung đột tri thức đa nguồn -- CoRe-MMRAG}
+\label{sec:method_coremmrag}
+
+\draftnote[TV3]{QUAN TRỌNG: Ghi chú trong Google Docs về bài 5 còn sơ lược và thiếu số liệu. TV3 cần đọc trực tiếp bản PDF gốc \textit{CoRe-MMRAG} (\texttt{2025.acl-long.1583}, \texttt{\textbackslash cite\{tian2025coremmrag\}}) để viết đầy đủ mục này với độ dài 3--3.5 trang.}
+
+\subsection{Hình thức hóa xung đột tri thức trong Multimodal RAG: PRKI và VTKI}
+\label{subsec:core_conflicts}
+
+\draftnote[TV3]{Định nghĩa và phân biệt rõ 2 dạng xung đột cốt lõi của bài báo: (1) PRKI (\textit{Parametric-Retrieved Knowledge Inconsistency} -- mâu thuẫn giữa tri thức tham số nội tại và dữ liệu truy xuất ngoài); (2) VTKI (\textit{Visual-Textual Knowledge Inconsistency} -- mâu thuẫn giữa tín hiệu thị giác trong ảnh và văn bản truy xuất). Kèm 1 ví dụ minh họa cụ thể từ bài gốc.}
+
+\subsection{Cơ chế hoạt động 4 giai đoạn của CoRe-MMRAG}
+\label{subsec:core_pipeline}
+
+\draftnote[TV3]{Vẽ/chèn sơ đồ pipeline và giải thích chi tiết từng bước trong quy trình 4 giai đoạn: (1) Parametric Knowledge Generation; (2) Visual-Textual Knowledge Integration (đánh giá tương đồng liên hợp để lọc nhiễu VTKI); (3) External Response Generation; (4) Cross-Source Integration \& Reconciliation (hòa giải PRKI). Bổ sung công thức tương ứng từ PDF gốc.}
+
+\subsection{Mô hình huấn luyện chuyên biệt và đánh đổi suy luận}
+\label{subsec:core_training}
+
+\draftnote[TV3]{Trình bày chiến lược huấn luyện phân biệt nguồn tri thức và căn chỉnh đa phương thức từ bài gốc; phân tích 2 đánh đổi: (1) tăng chi phí suy luận và độ trễ (Inference Overhead) do chạy chuỗi nhiều bước; (2) hiệu năng bị chặn trần bởi năng lực nhận thức chi tiết ảnh của MLLM nền.}

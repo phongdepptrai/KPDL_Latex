@@ -1,0 +1,46 @@
+% ==============================================================================
+% Chapter 5: Optional Mini-Reproduction & Error Analysis (Clean Skeleton)
+% Note: Comment out \input{chapters/05_reproduction} in main.tex if omitted
+% ==============================================================================
+
+\chapter{Thực nghiệm kiểm chứng và phân tích lỗi}
+\label{chap:reproduction}
+
+\draftnote[Chung]{Chương 5 là phần TÙY CHỌN để lấy điểm cộng (``không bắt buộc, nhưng chạy lại được và có đánh giá về tốc độ, kết quả, phân tích lỗi là điểm cộng''). Nếu nhóm không chạy code thực tế, hãy comment dòng nạp tệp \texttt{chapters/05\_reproduction} trong \texttt{main.tex} và tăng chiều sâu phân tích ví dụ định tính từ phụ lục bài báo ở Chương 3--4.}
+
+% ------------------------------------------------------------------------------
+\section{Thiết lập môi trường và tập dữ liệu kiểm thử}
+\label{sec:repro_setup}
+
+\draftnote[TV2 + TV1]{Mô tả phần cứng (ví dụ GPU Google Colab T4/L4), phiên bản mã nguồn mở (ví dụ \texttt{colpali-engine}, \texttt{OpenBMB/visrag}), và tập mẫu 20--50 trang PDF đa phương thức dùng để đối chứng TextRAG (OCR + BGE-M3/BM25) với Vision-space RAG.}
+
+% ------------------------------------------------------------------------------
+\section{Đánh giá thực tế về tốc độ, bộ nhớ và độ chính xác}
+\label{sec:repro_metrics}
+
+\draftnote[TV2]{Ghi lại kết quả đo thực tế vào Bảng~\ref{tab:repro_benchmark} và nhận xét mức độ nhất quán với kết quả công bố trong bài báo gốc.}
+
+\begin{table}[H]
+\centering
+\small
+\caption[Kết quả đo thực nghiệm đối chứng trên tập kiểm thử nội bộ]{Kết quả đo thực nghiệm đối chứng trên tập kiểm thử nội bộ của nhóm.}
+\label{tab:repro_benchmark}
+\renewcommand{\arraystretch}{1.24}
+\begin{tabularx}{\textwidth}{@{}L M{1.95cm} M{1.7cm} M{2.05cm} M{2.0cm}@{}}
+\toprule
+\rowcolor{tblhead}
+\thead{Pipeline thử nghiệm} & \thead{Indexing\newline (s/trang)} & \thead{Query\newline (ms)} & \thead{Dung lượng\newline chỉ mục} & \thead{Recall\newline @1 / @5} \\
+\midrule
+TextRAG (OCR + \dots) & \dots & \dots & \dots & \dots \\
+\rowcolor{zebrabg}
+ColPali / ColQwen2 & \dots & \dots & \dots & \dots \\
+VisRAG-Ret & \dots & \dots & \dots & \dots \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ------------------------------------------------------------------------------
+\section{Phân tích lỗi định tính (Error Analysis)}
+\label{sec:repro_error_analysis}
+
+\draftnote[TV3]{Trình bày 2--3 tình huống cụ thể kèm ảnh chụp minh họa: (1) Ca TextRAG lỗi do OCR/bố cục nhưng Vision-space RAG đúng; (2) Bản đồ nhiệt MaxSim của ColPali định vị vùng đồ thị/bảng biểu; (3) Ca thất bại thực tế của Vision-space RAG (chữ quá nhỏ hoặc nhiễu khi nhiều trang).}

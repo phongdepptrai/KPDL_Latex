@@ -1,0 +1,110 @@
+% ==============================================================================
+% Publication-grade TikZ Pipeline Diagram
+% Guarantees aligned horizontal flow, non-overlapping inner cards, and centered links
+% ==============================================================================
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+    >=Stealth,
+    stagebox/.style={
+        rectangle, rounded corners=4pt,
+        draw=#1, fill=#1!8!white,
+        line width=1.0pt, align=center,
+        text width=3.45cm, inner sep=7pt,
+        minimum height=5.05cm,
+        drop shadow={shadow xshift=0.6pt, shadow yshift=-0.8pt, opacity=0.14}
+    },
+    endpoint/.style={
+        rectangle, rounded corners=4pt,
+        draw=#1, fill=#1!10!white,
+        line width=1.0pt, align=center,
+        text width=2.25cm, inner sep=6pt,
+        minimum height=1.85cm,
+        drop shadow={shadow xshift=0.6pt, shadow yshift=-0.8pt, opacity=0.14}
+    },
+    subcard/.style={
+        rectangle, rounded corners=3pt,
+        draw=tealacc!80!black, fill=white,
+        line width=0.75pt, align=center,
+        text width=4.0cm, inner sep=5pt,
+        minimum height=1.35cm
+    },
+    flowarrow/.style={->, line width=1.25pt, color=primary!85},
+    dashlink/.style={dashed, line width=0.85pt, color=muted}
+]
+
+% Stage 0: Input Query (aligned along y = 0)
+\node[endpoint=muted] (query) at (0, 0) {
+    {\small\bfseries\color{primary}Truy vấn}\\[4pt]
+    {\footnotesize Văn bản /\\ Đa phương thức}
+};
+
+% Stage 1: Pre-Retrieval (UniversalRAG)
+\node[stagebox=accent, right=0.7cm of query] (router) {
+    {\footnotesize\bfseries\color{accent!90!black}TẦNG 1: PRE-RETRIEVAL}\\[6pt]
+    {\small\bfseries\color{primary}UniversalRAG} {\scriptsize(ACL '26)}\\[6pt]
+    {\footnotesize Multi-hot Router\\
+    6 kho độc lập\\
+    \textit{(Modality $\times$ Granularity)}}
+};
+
+% Stage 2: Vision-Space Document RAG container (exact same height & midline y=0)
+\node[stagebox=tealacc, text width=4.75cm, right=0.75cm of router] (vision) {};
+\node[font=\footnotesize\bfseries\color{tealacc!90!black}, anchor=north]
+    at ($(vision.north)+(0,-0.22cm)$) {TẦNG 2: VISUAL DOC RAG};
+\node[subcard, anchor=north] at ($(vision.north)+(0,-0.82cm)$) (colpali) {
+    {\small\bfseries\color{primary}ColPali} {\scriptsize(ICLR '25)}\\[2pt]
+    {\scriptsize Đa vector (1030$\times$128) + MaxSim}
+};
+\node[subcard, below=0.28cm of colpali] (visrag) {
+    {\small\bfseries\color{primary}VisRAG} {\scriptsize(ICLR '25)}\\[2pt]
+    {\scriptsize Đơn vector (4.5\,KB) + Visual Gen}
+};
+
+% Stage 3: Post-Retrieval (CoRe-MMRAG)
+\node[stagebox=goldacc, right=0.75cm of vision] (core) {
+    {\footnotesize\bfseries\color{goldacc!90!black}TẦNG 3: POST-RETRIEVAL}\\[6pt]
+    {\small\bfseries\color{primary}CoRe-MMRAG} {\scriptsize(ACL '25)}\\[6pt]
+    {\footnotesize Hòa giải xung đột 4 bước\\
+    Kiểm chứng PRKI \& VTKI}
+};
+
+% Output Answer
+\node[endpoint=tealacc!85!black, right=0.7cm of core] (ans) {
+    {\small\bfseries\color{primary}Câu trả lời}\\[4pt]
+    {\footnotesize Trung thực \&\\ Có căn cứ}
+};
+
+% Top Survey Taxonomy banner spanning exact full width with generous vertical padding
+\coordinate (bannerTopLeft) at ($(query.west |- router.north)+(0, 2.00cm)$);
+\coordinate (bannerBotRight) at ($(ans.east |- router.north)+(0, 0.62cm)$);
+\node[
+    rectangle, rounded corners=4pt,
+    draw=primary, fill=primary,
+    line width=1.0pt,
+    fit=(bannerTopLeft)(bannerBotRight),
+    inner sep=0pt,
+    drop shadow={shadow xshift=0.6pt, shadow yshift=-0.8pt, opacity=0.15}
+] (survey) {};
+\node[align=center, text=white] at (survey.center) {
+    {\small\bfseries Khung phân loại tổng quan (Taxonomy 5 thành phần): \textit{Ask in Any Modality} (ACL 2025 Findings)}\\[3pt]
+    {\footnotesize\color{white!90!primary} Retrieval $\;\bullet\;$ Fusion $\;\bullet\;$ Augmentation $\;\bullet\;$ Generation $\;\bullet\;$ Training}
+};
+
+% Strictly horizontal main pipeline arrows
+\draw[flowarrow] (query.east) -- (router.west);
+\draw[flowarrow] (router.east) -- (vision.west);
+\draw[flowarrow] (vision.east) -- (core.west);
+\draw[flowarrow] (core.east) -- (ans.west);
+
+% Dead-center vertical dashed mapping lines from survey banner to each stage
+\draw[dashlink, ->] (router.north |- survey.south) -- (router.north);
+\draw[dashlink, ->] (vision.north |- survey.south) -- (vision.north);
+\draw[dashlink, ->] (core.north |- survey.south) -- (core.north);
+
+\end{tikzpicture}%
+}
+\caption[Định vị 5 bài báo nghiên cứu trong đường ống Multimodal RAG]{Định vị 5 bài báo nghiên cứu trong đường ống xử lý Multimodal RAG đầu--cuối.}
+\label{fig:pipeline_overview}
+\end{figure}

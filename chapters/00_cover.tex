@@ -1,0 +1,73 @@
+% ==============================================================================
+% Official VNU-UET Cover Page (Adapted for Group Course Report)
+% Border coordinates (left=2.5cm, right=1.5cm) share the exact horizontal center
+% (11.0cm) with the VNU-UET body text margins (left=3.0cm, right=2.0cm).
+% ==============================================================================
+
+\begin{titlepage}
+\thispagestyle{empty}
+\setlength{\parindent}{0pt}
+
+% Classic VNU-UET double black frame (outer 2.5pt, inner 0.8pt)
+\begin{tikzpicture}[overlay, remember picture]
+    \draw[line width=2.5pt, color=black]
+        ($(current page.north west)+(2.5cm,-2.0cm)$) rectangle
+        ($(current page.south east)+(-1.5cm,2.2cm)$);
+    \draw[line width=0.8pt, color=black]
+        ($(current page.north west)+(2.65cm,-2.15cm)$) rectangle
+        ($(current page.south east)+(-1.65cm,2.35cm)$);
+\end{tikzpicture}
+
+\begin{center}
+    \vspace*{0.2cm}
+    {\fontsize{13pt}{16pt}\selectfont\textbf{ĐẠI HỌC QUỐC GIA HÀ NỘI}}\\[3pt]
+    {\fontsize{13pt}{16pt}\selectfont\textbf{TRƯỜNG ĐẠI HỌC CÔNG NGHỆ}}
+
+    \vspace{1.2cm}
+
+    % Official VNU-UET vector crest logo
+    \includegraphics[width=3.2cm]{figures/UET_logo.pdf}
+
+    \vspace{1.1cm}
+
+    {\fontsize{14pt}{18pt}\selectfont\textbf{BÁO CÁO BÀI TẬP LỚN}}\\[4pt]
+    {\fontsize{13.5pt}{17pt}\selectfont\textbf{HỌC PHẦN: KHAI PHÁ DỮ LIỆU}}
+
+    \vspace{1.1cm}
+
+    {\fontsize{16.5pt}{22pt}\selectfont\textbf{TỔNG QUAN VÀ PHÂN TÍCH CÁC PHƯƠNG PHÁP}}\\[4pt]
+    {\fontsize{16.5pt}{22pt}\selectfont\textbf{MULTIMODAL RETRIEVAL-AUGMENTED GENERATION}}
+
+    \vspace{1.5cm}
+
+    % Course instructor and 3-member group block (centered cleanly inside VNU-UET border)
+    \begin{minipage}{0.92\textwidth}
+        \fontsize{13pt}{17pt}\selectfont
+        \begin{tabularx}{\textwidth}{@{}P{5.4cm}L@{}}
+            \textbf{Giảng viên hướng dẫn:} & \dots\dots\dots\dots\dots\dots\dots\dots\dots\dots \\
+            \textbf{Lớp học phần:}         & \dots\dots\dots\dots\dots\dots\dots\dots\dots\dots \\
+            \textbf{Nhóm thực hiện:}       & Nhóm \dots\dots \\
+        \end{tabularx}
+
+        \vspace{10pt}
+        \renewcommand{\arraystretch}{1.25}
+        \small
+        \begin{tabularx}{\textwidth}{@{}M{1.0cm}L M{3.2cm}P{2.5cm}@{}}
+            \toprule
+            \rowcolor{tblhead}
+            \thead{STT} & \thead{Họ và tên sinh viên} & \thead{Mã sinh viên} & \thead{Vai trò} \\
+            \midrule
+            1 & Nguyễn Văn A (Thành viên 1) & \dots\dots\dots\dots & Điều phối \\
+            2 & Trần Văn B (Thành viên 2)   & \dots\dots\dots\dots & Thành viên \\
+            3 & Lê Văn C (Thành viên 3)     & \dots\dots\dots\dots & Thành viên \\
+            \bottomrule
+        \end{tabularx}
+    \end{minipage}
+
+    \vfill
+
+    {\fontsize{13pt}{16pt}\selectfont\textbf{HÀ NỘI -- 2026}}
+    \vspace*{0.2cm}
+\end{center}
+
+\end{titlepage}

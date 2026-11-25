@@ -1,0 +1,40 @@
+% ==============================================================================
+% Section 3.4: Cross-Method Comparison and Unified Architecture (Clean Skeleton)
+% Owner: Member 3 (TV3) | Target length: ~2 pages
+% ==============================================================================
+
+\section{Tổng hợp mối liên hệ, độ phức tạp và khả năng kết hợp}
+\label{sec:method_integration}
+
+\draftnote[TV3]{Mục 3.4 dài khoảng 2 trang. Đây là mục tổng hợp liên kết toàn bộ 4 phương pháp kỹ thuật theo khía cạnh: độ phức tạp, phạm vi giải quyết, khả năng ghép nối thành một kiến trúc đầu--cuối và các điểm nghẽn khi tích hợp.}
+
+\subsection{Ma trận so sánh toàn diện bốn phương pháp}
+\label{subsec:4method_matrix}
+
+\draftnote[TV3]{Hoàn thiện Bảng~\ref{tab:four_methods_summary} đối chiếu UniversalRAG, ColPali, VisRAG và CoRe-MMRAG theo các trục: Tầng xử lý, Bài toán giải quyết, Chi phí/Độ phức tạp (thời gian, bộ nhớ) và Điều kiện thất bại.}
+
+\begin{table}[H]
+\centering
+\small
+\caption[So sánh tổng hợp 4 phương pháp trọng tâm]{So sánh tổng hợp 4 phương pháp trọng tâm theo tầng xử lý, phạm vi và độ phức tạp.}
+\label{tab:four_methods_summary}
+\renewcommand{\arraystretch}{1.24}
+\begin{tabularx}{\textwidth}{@{}P{3.0cm}P{2.3cm}L L P{2.7cm}@{}}
+\toprule
+\rowcolor{tblhead}
+\thead{Phương pháp} & \thead{Tầng xử lý} & \thead{Bài toán giải quyết} & \thead{Chi phí / Độ phức tạp} & \thead{Điều kiện thất bại} \\
+\midrule
+UniversalRAG & \dots & \dots & \dots & \dots \\
+\rowcolor{zebrabg}
+ColPali & \dots & \dots & \dots & \dots \\
+VisRAG & \dots & \dots & \dots & \dots \\
+\rowcolor{zebrabg}
+CoRe-MMRAG & \dots & \dots & \dots & \dots \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Kiến trúc tích hợp đề xuất và các điểm nghẽn khi kết hợp}
+\label{subsec:unified_architecture}
+
+\draftnote[TV3]{Đề xuất kịch bản ghép nối cả 4 phương pháp thành một pipeline tham chiếu thống nhất (UniversalRAG định tuyến $\rightarrow$ ColPali/VisRAG xử lý kho tài liệu trực quan $\rightarrow$ CoRe-MMRAG hòa giải xung đột PRKI/VTKI $\rightarrow$ tạo sinh câu trả lời). Có thể đặt nhận định cốt lõi vào môi trường \texttt{keybox}. Phân tích 3 điểm nghẽn thực tế khi tích hợp: cộng dồn độ trễ, lan truyền sai số xuyên tầng (cascading errors) và chi phí đồng bộ nhiều mô hình nền khác nhau.}

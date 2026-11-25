@@ -1,0 +1,62 @@
+% ==============================================================================
+% Section 3.2: In-Corpus Visual Document RAG - ColPali vs VisRAG (Clean Skeleton)
+% Owner: Member 2 (TV2) | Target length: ~5.5-6.5 pages
+% ==============================================================================
+
+\section{Tầng In-Corpus Visual Document RAG: Đối chứng ColPali và VisRAG}
+\label{sec:method_vision_doc}
+
+\draftnote[TV2]{Mục 3.2 dài khoảng 5.5--6.5 trang. Trọng tâm là đối chứng trực tiếp hai thiết kế cạnh tranh cho cùng bài toán truy xuất tài liệu trong không gian thị giác: ColPali (\texttt{\textbackslash cite\{faysse2025colpali\}}) dùng đa vector + Late Interaction cho Retrieval, còn VisRAG (\texttt{\textbackslash cite\{yu2025visrag\}}) dùng đơn vector + Visual Generation đầu--cuối.}
+
+\subsection{Chuyển dịch mô hình: Truy xuất trong không gian thị giác (Page-as-Image)}
+\label{subsec:vision_paradigm}
+
+\draftnote[TV2]{Phân tích nguyên nhân loại bỏ OCR/Layout Parsing giúp cắt đứt hiệu ứng lan truyền lỗi (cascade effect). Đưa vào các ví dụ đối chứng từ bài gốc (có thể đặt trong môi trường \texttt{examplebox}): lỗi font ``Club Jetty'' và lỗi mất bố cục bảng LinkedIn (49\% vs 53\%) trong VisRAG (Bảng 8--9); ví dụ heatmap ``hour'' và ``Kazakhstan--Kashagan'' trong ColPali.}
+
+\subsection{Nhánh Biểu diễn đa vector và Late Interaction -- ColPali}
+\label{subsec:colpali}
+
+\subsubsection{Kiến trúc mô hình và luồng xử lý}
+\draftnote[TV2]{Vẽ/chèn sơ đồ kiến trúc và mô tả luồng Offline/Online của ColPali trên PaliGemma-3B: Ảnh 448$\times$448 $\rightarrow$ SigLIP-So400m/14 (1024 patches) + 6 token prompt $\rightarrow$ Gemma-2B $\rightarrow$ chiếu xuống $D=128$ ($1030 \times 128$); câu hỏi nối thêm 5 token đệm \texttt{<unused0>}.}
+
+\subsubsection{Toán tử Late Interaction (MaxSim) và hàm mất mát}
+\draftnote[TV2]{Viết công thức toán học cho toán tử MaxSim $\mathrm{LI}(q, d)$ (kế thừa ColBERT \texttt{\textbackslash cite\{khattab2020colbert\}}), hàm mất mát Pairwise Contrastive Loss với mẫu âm khó nhất trong batch, cấu hình LoRA ($r=\alpha=32$, đóng băng vision encoder, 118,695 cặp query--page), cơ chế nén Hierarchical Token Pooling (factor=3 giảm 66.7\%, giữ 97.8\%) và mở rộng ColQwen2.}
+
+\subsection{Nhánh Biểu diễn đơn vector và Tạo sinh đầu--cuối -- VisRAG}
+\label{subsec:visrag}
+
+\subsubsection{Bộ truy xuất VisRAG-Ret và Position-weighted Mean Pooling}
+\draftnote[TV2]{Trình bày dual-encoder trên MiniCPM-V 2.0 (3.43B) nén mỗi trang về 1 vector 2304 chiều ($\approx 4.5$\,KB). Viết công thức \textit{position-weighted mean pooling} ($w_i = i / \sum_j j$) và giải thích vì sao cần trọng số vị trí để khắc phục \textit{causal attention}; trình bày hàm InfoNCE loss ($\tau=0.02$, batch 128) và quy trình lọc/tổng hợp dữ liệu huấn luyện (6 tập VQA + 239K mẫu tổng hợp).}
+
+\subsubsection{Bộ tạo sinh VisRAG-Gen cho ngữ cảnh đa trang}
+\draftnote[TV2]{Giải thích và so sánh 3 cơ chế xử lý top-$k$ trang ảnh: (1) Page Concatenation, (2) Weighted Selection theo công thức $P(a\mid q, d)\cdot\lambda(q, d)$, và (3) Multi-image VLM (suy luận multi-hop chéo trang).}
+
+\subsection{So sánh đối chứng chuyên sâu: ColPali và VisRAG}
+\label{subsec:colpali_vs_visrag}
+
+\draftnote[TV2]{Điền Bảng~\ref{tab:colpali_vs_visrag} theo 9 tiêu chí đối chiếu (Backbone, Kiểu biểu diễn, Dung lượng $\sim$257.5\,KB vs $\sim$4.5\,KB ($\sim 57\times$), Cơ chế so khớp, Khả năng giải thích heatmap, Phạm vi Retrieval vs End-to-End, Dữ liệu huấn luyện, Chiến lược nén, Điểm yếu cố hữu), sau đó viết 2--3 đoạn phân tích đánh đổi để rút ra kịch bản chọn mô hình phù hợp.}
+
+\begin{table}[H]
+\centering
+\small
+\caption[Bảng đối chứng cơ chế kỹ thuật giữa ColPali và VisRAG]{Bảng đối chứng cơ chế kỹ thuật và đánh đổi thiết kế giữa ColPali và VisRAG.}
+\label{tab:colpali_vs_visrag}
+\renewcommand{\arraystretch}{1.24}
+\begin{tabularx}{\textwidth}{@{}P{3.4cm}L L@{}}
+\toprule
+\rowcolor{tblhead}
+\thead{Tiêu chí đối chiếu} & \thead{ColPali} & \thead{VisRAG} \\
+\midrule
+Backbone nền tảng & \dots & \dots \\
+\rowcolor{zebrabg}
+Kiểu biểu diễn \& Dung lượng & \dots & \dots \\
+Cơ chế so khớp & \dots & \dots \\
+\rowcolor{zebrabg}
+Khả năng giải thích & \dots & \dots \\
+Phạm vi giải quyết & \dots & \dots \\
+\rowcolor{zebrabg}
+Dữ liệu \& Huấn luyện & \dots & \dots \\
+Điểm yếu / Đánh đổi chính & \dots & \dots \\
+\bottomrule
+\end{tabularx}
+\end{table}

@@ -1,0 +1,80 @@
+% ==============================================================================
+% Main entry point for the VNU-UET Data Mining Report (XeLaTeX + BibTeX)
+% ==============================================================================
+
+\documentclass[a4paper,12pt,oneside]{report}
+
+% Load official VNU-UET typography, margins, headings, and helper environments
+\input{preamble}
+
+% Toggle writing guidance cards: \showdraftnotestrue (draft) / \showdraftnotesfalse (final)
+\showdraftnotestrue
+
+\begin{document}
+
+% ------------------------------------------------------------------------------
+% Cover page (unnumbered, exact VNU-UET double black border + official UET logo)
+% ------------------------------------------------------------------------------
+\pagestyle{empty}
+\input{chapters/00_cover}
+
+% ------------------------------------------------------------------------------
+% Front matter (Roman numerals, official VNU-UET ordering)
+% ------------------------------------------------------------------------------
+\clearpage
+\pagestyle{plain}
+\pagenumbering{roman}
+
+% Team work allocation (unnumbered frontmatter section)
+\input{chapters/00_allocation}
+
+% Table of contents
+\clearpage
+\tableofcontents
+
+% Standardized abbreviations and terminology glossary
+\input{chapters/00_glossary}
+
+% List of figures
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{\listfigurename}
+\listoffigures
+
+% List of tables
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{\listtablename}
+\listoftables
+
+% ------------------------------------------------------------------------------
+% Main content (Arabic numerals starting at page 1, target >= 30 pages)
+% ------------------------------------------------------------------------------
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\input{chapters/01_introduction}
+\input{chapters/02_background}
+\input{chapters/03_methods}
+\input{chapters/04_experiments}
+
+% Optional bonus chapter for code reproduction and error analysis (comment out if omitted)
+\input{chapters/05_reproduction}
+
+\input{chapters/06_conclusion}
+
+% ------------------------------------------------------------------------------
+% References (IEEEtran BibTeX, listed in Table of Contents)
+% In draft mode, display the 5 core papers in References until inline \cite{} is added
+% ------------------------------------------------------------------------------
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{\bibname}
+\ifshowdraftnotes
+    \nocite{abootorabi2025ask,yeo2026universalrag,faysse2025colpali,yu2025visrag,tian2025coremmrag}
+\fi
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}

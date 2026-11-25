@@ -1,0 +1,128 @@
+% ==============================================================================
+% Chapter 4: Datasets, Evaluation Metrics, and Experimental Analysis (Clean Skeleton)
+% Owners: TV1 (UniversalRAG), TV2 (ColPali & VisRAG), TV3 (Comparability & CoRe-MMRAG)
+% Target length: ~7-9 pages
+% ==============================================================================
+
+\chapter{Dữ liệu, độ đo và phân tích kết quả thực nghiệm}
+\label{chap:experiments}
+
+\draftnote[Chung]{Chương 4 dài khoảng 7--9 trang. Không chép máy móc bảng số liệu thô: phải làm rõ điều kiện đánh giá, trả lời trực diện câu hỏi "các kết quả có so sánh trực tiếp được không?", và kiểm chứng xem thực nghiệm có thực sự chứng minh được tuyên bố của tác giả hay không.}
+
+% ------------------------------------------------------------------------------
+\section{Tổng quan bộ dữ liệu và benchmark đánh giá}
+\label{sec:exp_datasets}
+
+\draftnote[TV1 + TV2 + TV3]{Mỗi thành viên điền và phân tích nhóm benchmark thuộc phần mình phụ trách vào Bảng~\ref{tab:benchmarks}: ViDoRe 10 tác vụ Anh--Pháp (ColPali); 6 tập VQA + BEIR (VisRAG); 10 tập ID + 6 tập OOD (UniversalRAG); InfoSeek \& Encyclopedic-VQA (CoRe-MMRAG). Nêu rõ đặc điểm thống kê cơ bản cần thiết để hiểu và đối chiếu kết quả.}
+
+\begin{table}[H]
+\centering
+\small
+\caption[Tổng hợp các bộ dữ liệu và benchmark trọng tâm]{Tổng hợp các bộ dữ liệu và benchmark trọng tâm được sử dụng trong 4 nghiên cứu kỹ thuật.}
+\label{tab:benchmarks}
+\renewcommand{\arraystretch}{1.24}
+\begin{tabularx}{\textwidth}{@{}P{3.1cm}P{2.5cm}P{2.3cm}L@{}}
+\toprule
+\rowcolor{tblhead}
+\thead{Nhóm / Benchmark} & \thead{Bài báo} & \thead{Phương thức} & \thead{Đặc điểm nổi bật \& Thách thức} \\
+\midrule
+ViDoRe & ColPali & \dots & \dots \\
+\rowcolor{zebrabg}
+6 tập VQA + BEIR & VisRAG & \dots & \dots \\
+10 tập ID + 6 tập OOD & UniversalRAG & \dots & \dots \\
+\rowcolor{zebrabg}
+InfoSeek \& Enc-VQA & CoRe-MMRAG & \dots & \dots \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ------------------------------------------------------------------------------
+\section{Hệ thống độ đo đánh giá}
+\label{sec:exp_metrics}
+
+\draftnote[TV2]{Trình bày ngắn gọn định nghĩa, công thức chính và ý nghĩa khác biệt của 3 nhóm độ đo: (1) Truy xuất ($\mathrm{MRR}@K$, $\mathrm{nDCG}@K$, $\mathrm{Recall}@K$); (2) Tạo sinh \& Định tuyến ($\mathrm{EM}$, $\mathrm{Relaxed\ EM\ (\pm 5\%)}$, $\mathrm{VQA\ Accuracy}$, $\mathrm{BEM}$, $\mathrm{Routing\ Accuracy}$); (3) Hiệu năng hệ thống (Offline Indexing Latency, Online Query Latency, Storage Footprint KB/page).}
+
+% ------------------------------------------------------------------------------
+\section{Phân tích tính khả so sánh và đối chiếu kết quả định lượng}
+\label{sec:exp_results}
+
+\subsection{Các kết quả có thể so sánh trực tiếp không?}
+\label{subsec:comparability}
+
+\draftnote[TV3]{Trả lời trực tiếp yêu cầu bài tập: (1) Chỉ có cặp \textbf{ColPali và VisRAG} đối chiếu trực tiếp được trên phân khúc truy xuất tài liệu trực quan (VisRAG báo cáo trực tiếp In-domain MRR@10 cùng đối chiếu tốc độ và bộ nhớ); (2) Không so sánh ngang hàng bằng 1 con số duy nhất giữa UniversalRAG, CoRe-MMRAG và ColPali/VisRAG do khác bộ dữ liệu, đơn vị truy xuất, backbone và độ đo; (3) Lưu ý điểm giao tập \texttt{InfoSeek} giữa UniversalRAG và CoRe-MMRAG khác thiết lập nên phải phân tích riêng điều kiện thực nghiệm.}
+
+\subsection{Tổng hợp kết quả định lượng theo từng nhóm bài toán}
+\label{subsec:quantitative_tables}
+
+\draftnote[TV2]{Điền Bảng~\ref{tab:vision_vs_text_retrieval} (đối chiếu Vision-space ColPali, ColQwen2, VisRAG-Ret với TextRAG OCR/Captioning, SigLIP, BiPali, ColSigLIP kèm trích nguồn Bảng/Hình bài gốc). Đồng thời bổ sung thêm 1 bảng hoặc mục phân tích nhỏ cho: (a) End-to-End Generation của VisRAG (MiniCPM-V 2.6, GPT-4o, top-1/3/6/10, BEIR); (b) Ablation Study của ColPali (448 vs 224, OOD DocMatix, bỏ \texttt{<unused0>}, Token Pooling factor=3).}
+
+\begin{table}[H]
+\centering
+\small
+\caption[Đối chiếu hiệu năng truy xuất, tốc độ và dung lượng giữa Vision-space RAG và TextRAG]{Đối chiếu hiệu năng truy xuất, tốc độ và dung lượng lưu trữ giữa Vision-space RAG và TextRAG.}
+\label{tab:vision_vs_text_retrieval}
+\renewcommand{\arraystretch}{1.24}
+\begin{tabularx}{\textwidth}{@{}L M{2.05cm} M{2.15cm} M{1.75cm} M{2.05cm}@{}}
+\toprule
+\rowcolor{tblhead}
+\thead{Phương pháp} & \thead{ViDoRe\newline (nDCG@5)} & \thead{VisRAG ID\newline (MRR@10)} & \thead{Index /\newline trang} & \thead{Dung lượng /\newline trang} \\
+\midrule
+Baseline TextRAG / VLM & \dots & \dots & \dots & \dots \\
+\rowcolor{zebrabg}
+ColPali / ColQwen2 & \dots & \dots & \dots & \dots \\
+VisRAG-Ret & \dots & \dots & \dots & \dots \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\draftnote[TV1]{Điền Bảng~\ref{tab:universalrag_results} tổng hợp kết quả UniversalRAG trên 10 tập ID (so với Unified Embedding, ParagraphRAG, Oracle, mô hình nhỏ T5Gemma 2 270M, tỷ lệ chọn đúng modality) và 6 tập OOD (Training-free vs Ensemble), kèm trích dẫn chính xác Bảng/Hình trong bài gốc.}
+
+\begin{table}[H]
+\centering
+\small
+\caption[Kết quả thực nghiệm của UniversalRAG trên phân phối ID và OOD]{Kết quả thực nghiệm của UniversalRAG trên phân phối ID và OOD.}
+\label{tab:universalrag_results}
+\renewcommand{\arraystretch}{1.24}
+\begin{tabularx}{\textwidth}{@{}P{4.8cm}M{2.6cm}L@{}}
+\toprule
+\rowcolor{tblhead}
+\thead{Thiết lập / Phương pháp} & \thead{Điểm số} & \thead{Ý nghĩa thực nghiệm \& Nguồn bảng} \\
+\midrule
+Baseline (Unified / ParagraphRAG) & \dots & \dots \\
+\rowcolor{zebrabg}
+UniversalRAG (ID / T5Gemma 2) & \dots & \dots \\
+UniversalRAG (OOD / Ensemble) & \dots & \dots \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\draftnote[TV3]{Tra cứu trực tiếp bản PDF gốc \textit{CoRe-MMRAG} (\texttt{2025.acl-long.1583}) để điền đầy đủ số liệu chính xác vào Bảng~\ref{tab:core_results}, ghi rõ tên MLLM nền và các baseline giải xung đột liên quan.}
+
+\begin{table}[H]
+\centering
+\small
+\caption[Kết quả thực nghiệm của CoRe-MMRAG trên các benchmark KB-VQA]{Kết quả thực nghiệm của CoRe-MMRAG trên các benchmark KB-VQA.}
+\label{tab:core_results}
+\renewcommand{\arraystretch}{1.24}
+\begin{tabularx}{\textwidth}{@{}P{4.2cm}M{2.2cm}M{2.6cm}L@{}}
+\toprule
+\rowcolor{tblhead}
+\thead{Phương pháp đối chứng} & \thead{InfoSeek} & \thead{Enc-VQA} & \thead{Ghi chú thiết lập} \\
+\midrule
+MLLM nền (No-RAG) & \dots & \dots & \dots \\
+\rowcolor{zebrabg}
+Standard Multimodal RAG & \dots & \dots & \dots \\
+CoRe-MMRAG & \dots & \dots & \dots \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ------------------------------------------------------------------------------
+\section{Kiểm chứng lập luận tác giả và đánh giá phản biện của nhóm}
+\label{sec:exp_critique}
+
+\draftnote[TV1 + TV2 + TV3]{Trả lời trực tiếp câu hỏi: ``Kết quả thực nghiệm có hỗ trợ những ưu điểm mà tác giả đưa ra không?'' và chỉ ra điểm yếu/đánh đổi ẩn ở từng bài:
+(1) \textbf{ColPali}: Sụt mạnh ở 224$\times$224 (-24.8 điểm); Token Pooling giảm chất lượng trên trang chữ dày (\textit{Shift}); chưa đánh giá tạo sinh đầu--cuối; kiểm tra lại PDF gốc hai điểm lệch giữa văn bản Mục 6 và Bảng 7 (số patch ở 224$\times$224 và chiều biến thiên của \textit{No Q.A. Tokens} trên tiếng Pháp).
+(2) \textbf{VisRAG}: Hiệu năng tạo sinh giảm khi tăng từ top-3 xuống top-10 do nhiễu đa trang; thiếu chứng minh lý thuyết về giới hạn 1 vector đơn.
+(3) \textbf{UniversalRAG}: Giả định toán học còn lý tưởng; độ chính xác định tuyến OOD giảm so với ID.
+(4) \textbf{CoRe-MMRAG}: Đánh đổi độ trễ suy luận 4 bước và bị giới hạn bởi năng lực đọc ảnh của MLLM nền.}

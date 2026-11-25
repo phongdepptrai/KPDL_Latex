@@ -1,0 +1,70 @@
+% ==============================================================================
+% Chapter 2: Background and Related Work Positioning (Clean Skeleton)
+% Owner: Member 1 (TV1) | Target length: ~5-6 pages
+% ==============================================================================
+
+\chapter{Tổng quan lĩnh vực và định vị các hướng tiếp cận nền tảng}
+\label{chap:background}
+
+\draftnote[TV1]{Chương 2 dài khoảng 5--6 trang. Mục tiêu trọng tâm theo yêu cầu môn học: khái quát các hướng tiếp cận nền tảng, phân tích ưu/nhược điểm và định vị rõ các nghiên cứu nhóm đi sâu ở Chương 3 nằm ở nhánh nào trên bản đồ Multimodal RAG.}
+
+% ------------------------------------------------------------------------------
+\section{Hệ thống phân loại (Taxonomy) Multimodal RAG}
+\label{sec:bg_taxonomy}
+
+\draftnote[TV1]{Tổng hợp khung phân loại 5 thành phần từ bài Survey \texttt{\textbackslash cite\{abootorabi2025ask\}} (khảo sát hơn 100 công trình). Viết cô đọng theo 5 tiểu mục dưới đây, giữ đúng thuật ngữ chuẩn đã chốt.}
+
+\subsection{Chiến lược truy xuất (Retrieval Strategies)}
+\draftnote[TV1]{Trình bày 5 nhánh truy xuất theo phương thức: Text-centric (BM25, BGE-M3, ColBERT), Vision-centric (CLIP, VQA4CIR), Video-centric (VideoRAG, T-Mass), Audio-centric (WavRAG, SpeechRAG) và Document Retrieval (ColPali, ColQwen2, M3DocVQA).}
+
+\subsection{Cơ chế kết hợp thông tin (Fusion Mechanisms)}
+\draftnote[TV1]{Trình bày 3 nhóm kỹ thuật kết hợp: Score Fusion \& Alignment, Attention/Cross-attention Mechanisms, và Unified Frameworks \& Projections.}
+
+\subsection{Kỹ thuật tăng cường ngữ cảnh (Augmentation Techniques)}
+\draftnote[TV1]{Trình bày 2 hướng chính: Context Enrichment và Adaptive/Iterative Retrieval, nêu đánh đổi về độ trễ và tích lũy nhiễu.}
+
+\subsection{Kỹ thuật tạo sinh (Generation Techniques)}
+\draftnote[TV1]{Trình bày 5 hướng: In-Context Learning, Reasoning (CoT, Chain/Tree of RAG), Instruction Tuning, Source Attribution và Agentic Generation.}
+
+\subsection{Chiến lược huấn luyện (Training Strategies)}
+\draftnote[TV1]{Trình bày Alignment (Contrastive Learning), Robustness trước nhiễu và các hàm mất mát phổ biến (InfoNCE, Contrastive, Cross-Entropy, Triplet Loss).}
+
+% ------------------------------------------------------------------------------
+\section{Các hướng tiếp cận nền tảng trước nhóm bài báo trọng tâm}
+\label{sec:bg_baselines}
+
+\draftnote[TV1]{Nhóm các phương pháp nền tảng thành 3 hướng đối chứng trực tiếp với 4 bài báo ở Chương 3. Mỗi hướng trình bày rõ: cách làm, ưu điểm, nhược điểm và dẫn chứng số liệu cụ thể từ bài báo.}
+
+\subsection[Hướng 1: TextRAG dựa trên phân tích cấu trúc (OCR/Captioning)]{Hướng 1: Pipeline chuyển đổi tài liệu về văn bản (OCR/Captioning TextRAG)}
+\draftnote[TV1]{Mô tả cách làm (Unstructured, PPOCR, VLM Captioner + BM25/BGE-M3/NV-Embed-v2). Phân tích nút thắt tốc độ tiền xử lý (7.22\,s/trang trong ColPali), lỗi lan truyền OCR (bge-large thua BM25 trên văn bản OCR nhiễu trong VisRAG, Bảng 2) và thất thoát bố cục/biểu đồ.}
+
+\subsection{Hướng 2: Không gian biểu diễn thống nhất (Unified Embedding Space)}
+\draftnote[TV1]{Mô tả CLIP~\texttt{\textbackslash cite\{radford2021clip\}}, SigLIP~\texttt{\textbackslash cite\{zhai2023siglip\}}, UniIR, GME, VLM2Vec-V2. Phân tích 2 nhược điểm: (1) Modality Gap (UniversalRAG); (2) Biểu diễn tổng hợp đơn vector yếu trên trang nhiều chữ và không căn chỉnh từng patch (ColSigLIP thất bại ở 2.5--3.2 nDCG@5).}
+
+\subsection{Hướng 3: Truy xuất toàn bộ và giải quyết xung đột đơn phương thức}
+\draftnote[TV1]{Mô tả Retrieve-from-All (MultiRAG, MORE) gây chi phí cao và nhiễu kéo tụt chất lượng tạo sinh (UniversalRAG, Bảng 1), cùng giới hạn của các phương pháp giải xung đột thuần văn bản khi gặp mâu thuẫn ảnh--văn bản--tham số (CoRe-MMRAG).}
+
+\begin{table}[H]
+\centering
+\small
+\caption[Tổng hợp ưu, nhược điểm của các hướng tiếp cận nền tảng]{Tổng hợp ưu điểm, nhược điểm của các hướng tiếp cận nền tảng và khoảng trống dẫn tới nhóm phương pháp phân tích.}
+\label{tab:baseline_comparison}
+\renewcommand{\arraystretch}{1.24}
+\begin{tabularx}{\textwidth}{@{}P{3.3cm}L L P{2.8cm}@{}}
+\toprule
+\rowcolor{tblhead}
+\thead{Hướng tiếp cận} & \thead{Ưu điểm chính} & \thead{Hạn chế cốt lõi} & \thead{Bài báo khắc phục} \\
+\midrule
+Hướng 1 (\dots) & \dots & \dots & \dots \\
+\rowcolor{zebrabg}
+Hướng 2 (\dots) & \dots & \dots & \dots \\
+Hướng 3 (\dots) & \dots & \dots & \dots \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ------------------------------------------------------------------------------
+\section{Định vị phạm vi nghiên cứu của báo cáo trên bản đồ Taxonomy}
+\label{sec:bg_positioning}
+
+\draftnote[TV1]{Vẽ/chèn sơ đồ cây phân nhánh Taxonomy đánh dấu 3 nhánh trọng tâm mà nhóm chọn đi sâu (Adaptive Routing $\rightarrow$ Vision-Space Document Retrieval \& Generation $\rightarrow$ Cross-Source Knowledge Reconciliation) và giải thích lý do lựa chọn 3 nhánh này.}

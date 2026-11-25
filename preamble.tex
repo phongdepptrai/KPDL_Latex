@@ -1,0 +1,267 @@
+% ==============================================================================
+% Official VNU-UET Report / Thesis Style Preamble (XeLaTeX)
+% Follows VNU-UET formatting guidelines & Data Mining course specifications:
+%   - Font: Times New Roman (Unicode), 13pt body text
+%   - Line spacing: 1.3 lines, parindent 1cm (with indentfirst), parskip 6pt
+%   - Margins: top 2.5cm, bottom 3.0cm, left 3.0cm, right 2.0cm
+% ==============================================================================
+
+% Font configuration under XeLaTeX with graceful fallback for Overleaf Linux
+\usepackage{fontspec}
+\IfFontExistsTF{Times New Roman}{
+    \setmainfont{Times New Roman}
+}{
+    \setmainfont{TeX Gyre Termes}
+}
+
+% Official VNU-UET page geometry (left 3cm for binding, right 2cm, top 2.5cm, bottom 3cm)
+\usepackage[
+    a4paper,
+    top=2.5cm,
+    bottom=3.0cm,
+    left=3.0cm,
+    right=2.0cm,
+    footskip=1.2cm
+]{geometry}
+
+% Exact 13pt body typography scale (matching VNU-UET sizes.clo proportions) & 1.3 line spacing
+\usepackage{setspace}
+\makeatletter
+\renewcommand{\normalsize}{%
+    \@setfontsize\normalsize{13pt}{15.6pt}%
+    \abovedisplayskip 10pt plus 2pt minus 4pt%
+    \abovedisplayshortskip \z@ plus 3pt%
+    \belowdisplayshortskip 6pt plus 3pt minus 3pt%
+    \belowdisplayskip \abovedisplayskip%
+    \let\@listi\@listI%
+}
+\renewcommand{\small}{\@setfontsize\small{11.5pt}{13.8pt}}
+\renewcommand{\footnotesize}{\@setfontsize\footnotesize{10.5pt}{12.6pt}}
+\renewcommand{\scriptsize}{\@setfontsize\scriptsize{9pt}{11pt}}
+\renewcommand{\large}{\@setfontsize\large{14pt}{16.8pt}}
+\renewcommand{\Large}{\@setfontsize\Large{15pt}{18pt}}
+\renewcommand{\LARGE}{\@setfontsize\LARGE{17pt}{20.4pt}}
+\renewcommand{\huge}{\@setfontsize\huge{18pt}{22pt}}
+\makeatother
+\normalsize
+\setstretch{1.3}
+
+% Vietnamese academic paragraph formatting (VNU-UET standard: indent first paragraph)
+\usepackage{indentfirst}
+\setlength{\parindent}{1.0cm}
+\setlength{\parskip}{6pt}
+\raggedbottom
+\clubpenalty=10000
+\widowpenalty=10000
+
+% Micro-typographic refinement
+\usepackage{microtype}
+
+% Official Vietnamese labels (independent of babel/polyglossia)
+\renewcommand{\contentsname}{Mục lục}
+\renewcommand{\listfigurename}{Danh mục hình vẽ}
+\renewcommand{\listtablename}{Danh mục bảng biểu}
+\renewcommand{\bibname}{Tài liệu tham khảo}
+\renewcommand{\chaptername}{Chương}
+\renewcommand{\figurename}{Hình}
+\renewcommand{\tablename}{Bảng}
+
+% Restrained academic color palette (print-safe in grayscale and crisp in PDF)
+\usepackage[table]{xcolor}
+\definecolor{uetblue}{HTML}{004B87}      % Official VNU-UET Crest Blue (for diagrams)
+\definecolor{primary}{HTML}{1B365D}      % Deep Navy (subtle diagram/accent tone)
+\definecolor{accent}{HTML}{2B6CB0}       % Muted Steel Blue (diagrams)
+\definecolor{tealacc}{HTML}{0F766E}      % Deep Teal (diagrams)
+\definecolor{goldacc}{HTML}{9C6B19}      % Muted Amber (diagrams)
+\definecolor{muted}{HTML}{555555}        % Neutral Slate Gray
+\definecolor{tblhead}{HTML}{EAECEF}      % Subtle Neutral Gray Table Header
+\definecolor{zebrabg}{HTML}{F9FAFB}      % Ultra-light Alternating Row Tint
+\definecolor{boxbg}{HTML}{F7F8FA}        % Light Neutral Box Fill
+\definecolor{boxborder}{HTML}{CBD5E1}    % Crisp Thin Box Border
+\definecolor{notebg}{HTML}{F2F7FD}       % Draft Note Soft Fill
+\definecolor{noteframe}{HTML}{3B82F6}    % Draft Note Accent Border
+
+% Math packages
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+
+% Tables, figures, lists, and captions
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{subcaption}
+
+% Flush shaded header rows with booktabs rules
+\setlength{\aboverulesep}{0pt}
+\setlength{\belowrulesep}{0pt}
+\setlength{\extrarowheight}{2.5pt}
+\setlength{\tabcolsep}{6pt}
+
+% Custom column types to avoid stretched word spacing inside narrow cells
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{M}[1]{>{\centering\arraybackslash}p{#1}}
+
+% Helper macro for classic bold black table header cells
+\newcommand{\thead}[1]{\textbf{#1}}
+
+% Official VNU-UET list markers (en-dash for level 1, plus for level 2)
+\setlist[itemize,1]{label=\textendash, leftmargin=1.2cm, topsep=3pt, itemsep=2pt, parsep=0pt}
+\setlist[itemize,2]{label=+, leftmargin=0.9cm, topsep=2pt, itemsep=2pt, parsep=0pt}
+\setlist[enumerate,1]{label=\arabic*., leftmargin=1.2cm, topsep=3pt, itemsep=2pt, parsep=0pt}
+
+% Vector graphics and understated academic callout boxes
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,calc,shadows}
+\usepackage[most]{tcolorbox}
+
+% ==============================================================================
+% Official VNU-UET Chapter and Section Heading Formats
+% ==============================================================================
+\usepackage{titlesec}
+
+% Numbered chapters: centered uppercase CHƯƠNG N + title (classic VNU-UET standard)
+\titleformat{\chapter}[display]
+  {\normalfont\fontsize{14pt}{18pt}\selectfont\bfseries\centering}
+  {\MakeUppercase{\chaptername}\ \thechapter}
+  {4pt}
+  {\fontsize{15pt}{20pt}\selectfont\MakeUppercase}
+\titlespacing*{\chapter}{0pt}{-15pt}{22pt}
+
+% Unnumbered chapters (Mục lục, Danh mục hình vẽ, Danh mục bảng biểu, Tài liệu tham khảo)
+\titleformat{name=\chapter,numberless}[display]
+  {\normalfont\fontsize{14pt}{18pt}\selectfont\bfseries\centering}
+  {}
+  {0pt}
+  {\MakeUppercase}
+\titlespacing*{name=\chapter,numberless}{0pt}{-25pt}{18pt}
+
+% Sections: 14pt bold, numbered with trailing period (1.1. ...)
+\titleformat{\section}
+  {\normalfont\fontsize{14pt}{17pt}\selectfont\bfseries\raggedright}
+  {\thesection.}
+  {0.5em}
+  {}
+\titlespacing*{\section}{0pt}{12pt}{6pt}
+
+% Subsections: 13pt bold italic, numbered (1.1.1. ...)
+\titleformat{\subsection}
+  {\normalfont\fontsize{13pt}{16pt}\selectfont\bfseries\itshape\raggedright}
+  {\thesubsection.}
+  {0.5em}
+  {}
+\titlespacing*{\subsection}{0pt}{8pt}{4pt}
+
+% Subsubsections: 13pt italic
+\titleformat{\subsubsection}
+  {\normalfont\fontsize{13pt}{15.6pt}\selectfont\itshape\raggedright}
+  {\thesubsubsection.}
+  {0.5em}
+  {}
+\titlespacing*{\subsubsection}{0pt}{6pt}{2pt}
+
+% ==============================================================================
+% Official VNU-UET Table of Contents, List of Figures, and List of Tables
+% ==============================================================================
+\usepackage[titles]{tocloft}
+\renewcommand{\cftchappresnum}{Chương\ }
+\renewcommand{\cftchapaftersnum}{.}
+\setlength{\cftchapnumwidth}{2.5cm}
+\setlength{\cftbeforechapskip}{0.55em}
+\renewcommand{\cftchapfont}{\bfseries}
+\renewcommand{\cftchappagefont}{\bfseries}
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsecaftersnum}{.}
+\renewcommand{\cftsubsecaftersnum}{.}
+\setlength{\cftsecindent}{0.6cm}
+\setlength{\cftsecnumwidth}{1.2cm}
+\setlength{\cftsubsecindent}{1.3cm}
+\setlength{\cftsubsecnumwidth}{1.5cm}
+\renewcommand{\cftfigpresnum}{Hình\ }
+\renewcommand{\cftfigaftersnum}{.}
+\setlength{\cftfignumwidth}{2.2cm}
+\renewcommand{\cfttabpresnum}{Bảng\ }
+\renewcommand{\cfttabaftersnum}{.}
+\setlength{\cfttabnumwidth}{2.2cm}
+\renewcommand{\cftdotsep}{2.2}
+
+% Clean VNU-UET page style: centered bottom page number only (no cluttered headers)
+\pagestyle{plain}
+
+% Official VNU-UET figure and table captions (12pt, bold label with period)
+\captionsetup{
+    font={small},
+    labelfont={bf},
+    labelsep=period,
+    justification=centering,
+    skip=6pt
+}
+
+% Understated academic callout boxes compatible with monochrome/grayscale print
+\newtcolorbox{keybox}[1]{
+    enhanced,
+    breakable,
+    colback=boxbg,
+    colframe=black!65,
+    boxrule=0.5pt,
+    leftrule=2.5pt,
+    arc=1.5pt,
+    top=6pt, bottom=6pt, left=10pt, right=10pt,
+    before skip=8pt, after skip=8pt,
+    fonttitle=\small\bfseries\color{black},
+    colbacktitle=tblhead,
+    title={#1}
+}
+
+\newtcolorbox{examplebox}[1]{
+    enhanced,
+    breakable,
+    colback=white,
+    colframe=black!45,
+    boxrule=0.5pt,
+    leftrule=2.5pt,
+    arc=1.5pt,
+    top=6pt, bottom=6pt, left=10pt, right=10pt,
+    before skip=8pt, after skip=8pt,
+    fonttitle=\small\bfseries\color{black},
+    colbacktitle=boxbg,
+    title={#1}
+}
+
+% Toggleable draft guidance card for the 3-member writing workflow
+% Flip to \showdraftnotesfalse in main.tex before final submission
+\newif\ifshowdraftnotes
+\showdraftnotestrue
+\newcommand{\draftnote}[2][Chung]{%
+    \ifshowdraftnotes
+        \begin{tcolorbox}[
+            enhanced,
+            breakable,
+            colback=notebg,
+            colframe=noteframe!70!black,
+            borderline={0.5pt}{0pt}{noteframe!60, dashed},
+            boxrule=0pt,
+            leftrule=2.5pt,
+            arc=1.5pt,
+            top=5pt, bottom=5pt, left=8pt, right=8pt,
+            before skip=6pt, after skip=6pt
+        ]
+            {\footnotesize\color{primary}\textbf{Hướng dẫn viết (#1):}} {\small\color{black!80}\itshape #2}
+        \end{tcolorbox}
+    \fi
+}
+
+% Citations and clean invisible hyperlinks (classic VNU-UET print-ready look)
+\usepackage{cite}
+\usepackage[
+    unicode=true,
+    hidelinks
+]{hyperref}
