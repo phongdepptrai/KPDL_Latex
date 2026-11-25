@@ -23,14 +23,14 @@ Bộ khung LaTeX được xây dựng theo đúng **quy chuẩn trình bày Báo
 | `chapters/00_allocation.tex` | Bảng phân công công việc 3 thành viên | Chung |
 | `chapters/00_glossary.tex` | Bảng danh mục từ viết tắt & thuật ngữ chuẩn Anh–Việt | Chung |
 | `chapters/01_introduction.tex` | Chương 1: Giới thiệu bài toán & chiến lược chọn bài | **TV1** |
-| `chapters/02_background.tex` | Chương 2: Taxonomy & hướng tiếp cận nền tảng | **TV1** |
+| `chapters/02_background.tex` | Chương 2: Taxonomy & hướng tiếp cận nền tảng | **TV3** |
 | `chapters/03_1_universalrag.tex` | Mục 3.1: Pre-Retrieval Routing (*UniversalRAG*) | **TV1** |
 | `chapters/03_2_vision_doc_rag.tex` | Mục 3.2: Vision-space RAG (*ColPali* vs *VisRAG*) | **TV2** |
 | `chapters/03_3_core_mmrag.tex` | Mục 3.3: Hòa giải xung đột (*CoRe-MMRAG*) | **TV3** |
 | `chapters/03_4_integration.tex` | Mục 3.4: Bảng so sánh 4 bài & kiến trúc tích hợp | **TV3** |
 | `chapters/04_experiments.tex` | Chương 4: Dữ liệu, độ đo, bảng số liệu & phản biện | **TV1 + TV2 + TV3** |
 | `chapters/05_reproduction.tex` | Chương 5: Thực nghiệm kiểm chứng *(tùy chọn điểm cộng)* | Chung |
-| `chapters/06_conclusion.tex` | Chương 6: Kết luận, xu hướng & khoảng trống nghiên cứu | **TV3** |
+| `chapters/06_conclusion.tex` | Chương 6: Kết luận, xu hướng & khoảng trống nghiên cứu | **TV2** |
 
 ---
 
