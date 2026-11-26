@@ -1,27 +1,230 @@
 % ==============================================================================
-% Chapter 6: Conclusion, Research Trends, and Open Gaps (Clean Skeleton)
-% Owner: Member 2 (TV2) | Target length: ~2.5-3 pages
+% Chapter 6: Conclusion, Research Trends, and Open Gaps
+% Owner: Member 2 (TV2)
 % ==============================================================================
 
 \chapter{Kết luận, xu hướng và khoảng trống nghiên cứu}
 \label{chap:conclusion}
 
-\draftnote[TV2]{Chương 6 dài khoảng 2.5--3 trang, tổng kết lại câu chuyện xuyên suốt của 5 bài báo và rút ra xu hướng/khoảng trống nghiên cứu có căn cứ từ các hạn chế đã phân tích ở Chương 3 và Chương 4.}
-
-% ------------------------------------------------------------------------------
 \section{Tổng kết các phát hiện chính của báo cáo}
 \label{sec:conc_summary}
 
-\draftnote[TV2]{Tóm tắt 3 đóng góp cốt lõi theo 3 tầng: (1) Định tuyến nhận thức phương thức \& độ phân giải khử Modality Gap (UniversalRAG); (2) Truy xuất và đọc hiểu trực tiếp trong không gian thị giác loại bỏ nút thắt OCR (ColPali vs. VisRAG); (3) Hòa giải xung đột tri thức đa nguồn PRKI/VTKI nâng cao độ trung thực (CoRe-MMRAG).}
+Bài khảo sát \textit{Ask in Any Modality} đặt Multimodal RAG trong
+một khung gồm các lựa chọn về truy xuất, kết hợp thông tin, tăng cường
+ngữ cảnh, tạo sinh và huấn luyện. Khung này giúp xác định công đoạn mà
+mỗi nghiên cứu cải thiện và điều kiện để chuyển kết quả của nghiên
+cứu vào một hệ thống khác \cite{abootorabi2025ask}. Ba thông điệp ở
+slide kết luận của nhóm tập trung vào đường đi của chứng cứ từ kho
+dữ liệu đến câu trả lời.
 
-% ------------------------------------------------------------------------------
+\paragraph{Ảnh trang giữ chứng cứ về bố cục.}
+ColPali và VisRAG cho thấy trang PDF có thể được lập chỉ mục trực
+tiếp dưới dạng ảnh. Trên ViDoRe, ColPali cải thiện nDCG@5 trung bình
+từ 66,1 của BGE-M3 + OCR lên 81,3. Các mức tăng lớn ở hình khoa học
+và infographic cho thấy có những trường hợp việc giữ bố cục ảnh
+làm thay đổi đáng kể kết quả tìm trang. Ở tầng sinh, ví dụ LinkedIn
+trong bài VisRAG cho thấy cả hai pipeline có thể chọn đúng cùng
+một trang nhưng chỉ cấu hình đọc ảnh gắn đúng tỷ lệ với vùng địa
+lý. Cần đánh giá tìm trang và đọc chứng cứ bằng các phép đo riêng
+\cite{faysse2025colpali,yu2025visrag}.
+
+Khả năng đọc bố cục có chi phí. ColPali lưu khoảng 1030 vector
+128 chiều cho một trang và so khớp từng token truy vấn. VisRAG-Ret
+lưu một vector 2304 chiều, thuận tiện cho chỉ mục vector. Điểm
+MRR@10 của VisRAG-Ret nhỉnh hơn trung bình trong phép đối chiếu
+sáu tập, còn ColPali có lợi thế trên DocVQA và SlideVQA trong
+cùng thiết lập. Một hệ thống dùng nhiều vector có thể đầu tư vào
+độ phân giải và khả năng kiểm tra vùng khớp. Một hệ thống dùng
+vector đơn có thể dùng phần tài nguyên tiết kiệm để duy trì kho
+lớn hơn hoặc cấp thêm ứng viên cho bộ đọc. Việc chọn cấu hình cần
+gắn với truy vấn thực tế, ngân sách bộ nhớ và yêu cầu độ trễ
+\cite{faysse2025colpali,yu2025visrag}.
+
+\paragraph{Định tuyến theo phương thức và độ chi tiết.}
+Một kho có văn bản, bảng, ảnh và video đặt ra câu hỏi trước khi
+xếp hạng. Hệ thống phải xác định loại dữ liệu có thể trả lời
+và mức chi tiết thích hợp. Ví dụ, câu hỏi về một sự kiện ngắn cần
+ứng viên ở cấp clip, còn câu hỏi về bố cục của cả một báo cáo có
+thể cần tài liệu đầy đủ. UniversalRAG dùng bộ định tuyến chọn kho
+theo phương thức và độ chi tiết. Kết quả gần Oracle trong thiết
+lập được trình bày ở slide 15 cho thấy tiềm năng của việc chọn
+kho trước khi so khớp. Điểm Oracle chỉ là mốc tham chiếu trong
+thiết lập đó. Ở miền mới, sai số định tuyến có thể loại chứng cứ
+trước khi bộ truy xuất có cơ hội xếp hạng \cite{yeo2026universalrag}.
+
+\paragraph{Đối soát khi chứng cứ không nhất quán.}
+Khi bộ sinh có câu trả lời từ tri thức tham số và đồng thời đọc
+chứng cứ bên ngoài, hai nguồn có thể dẫn đến các đáp án khác nhau.
+Ảnh và văn bản trong tập truy xuất cũng có thể chỉ đến các thực
+thể khác nhau. CoRe-MMRAG coi những trường hợp này là hai dạng
+xung đột PRKI và VTKI, rồi đối soát qua nhiều bước. Ví dụ máy bay
+trong slide đặt ra cả việc nhận đúng thực thể từ ảnh lẫn việc
+xác nhận mốc thời gian từ nguồn ngoài. Giá trị của cơ chế đối
+soát phụ thuộc vào độ bao phủ và chất lượng của chứng cứ được
+truy xuất. Nếu cả tập trang đều bỏ sót chứng cứ cần thiết, nên
+ghi nhận thiếu căn cứ để trả lời \cite{tian2025coremmrag}.
+
+Khi ghép các ý trên thành một pipeline, có thể theo dõi lỗi theo
+thứ tự. Tầng định tuyến chọn kho, tầng truy xuất chọn chứng cứ
+trong kho, tầng đọc và đối soát dùng chứng cứ để tạo đáp án.
+Một câu trả lời có thể sai do bất kỳ bước nào, và lỗi ở bước
+trước làm giảm khả năng sửa lỗi ở bước sau. Vì vậy, báo cáo độ
+chính xác đầu cuối cần đi cùng dấu vết của kho đã chọn, mã trang
+đã truy xuất và nguồn dùng để suy luận. Các kết quả nghiên cứu
+hiện tại minh họa từng tầng dưới những bộ dữ liệu và chỉ số cụ
+thể.
+
 \section{Các xu hướng nghiên cứu chủ đạo}
 \label{sec:conc_trends}
 
-\draftnote[TV2]{Phân tích 4 xu hướng nổi bật dựa trên bài khảo sát (\texttt{\textbackslash cite\{abootorabi2025ask\}}) và 4 công trình trọng tâm: (1) Vision-First / OCR-Free Retrieval; (2) Adaptive Routing và Agentic Multimodal RAG; (3) Source Attribution và Knowledge Reconciliation; (4) Any-to-Any Modality và xử lý ngữ cảnh siêu dài (Long-video / Multi-document).}
+\paragraph{Cải thiện VLM làm nền cho truy xuất.}
+Slide 17 nêu bước chuyển từ PaliGemma sang Qwen2-VL. Biến thể
+ColQwen2 đạt 86,6 nDCG@5 so với 81,3 của ColPali tham chiếu,
+tăng 5,3 điểm trong Bảng 7 của nghiên cứu. ColQwen2 dùng chiến
+lược huấn luyện tương tự và giới hạn số mảnh ảnh ở 768 để gần
+mức bộ nhớ của cấu hình tham chiếu. Đây là bằng chứng về khả
+năng thích ứng của cơ chế late interaction khi bộ mã hóa thị
+giác--ngôn ngữ mạnh hơn. Số mảnh ảnh và backbone thay đổi cùng
+lúc, nên muốn giải thích riêng phần cải thiện do backbone cần
+thêm đối chứng \cite{faysse2025colpali}.
 
-% ------------------------------------------------------------------------------
+Một hệ quả của xu hướng này là nên đánh giá backbone qua kiểu
+chứng cứ và điều kiện sử dụng. OCR nội tại của VLM có thể giúp
+khớp chữ từ ảnh, nhưng năng lực đó cần đo riêng trên bản quét,
+chữ nhỏ và ngôn ngữ ngoài tập huấn luyện. Với biểu đồ, hiểu vị
+trí của trục, chú giải và các điểm còn quan trọng hơn tìm được
+từ khóa. Hệ thống có thể đạt chất lượng truy xuất tốt mà vẫn
+phải thêm bước đọc vùng có độ phân giải cao để trả lời các câu
+hỏi về giá trị chính xác.
+
+\paragraph{Duy trì ảnh qua cả truy xuất lẫn tạo sinh.}
+VisRAG minh họa xu hướng giữ ảnh làm biểu diễn trung gian từ lập
+chỉ mục đến khi chuyển ngữ cảnh cho bộ sinh. Ở đây ảnh là đầu
+vào chứng cứ còn câu trả lời có thể ở dạng văn bản. Khái niệm
+pipeline thị giác trong slide đề cập đường đi của dữ liệu tài
+liệu. Cách này giữ được quan hệ giữa nội dung và bố cục tới khi
+bộ sinh đọc trang. Các cơ chế đọc nhiều ảnh mở rộng phép đối
+chiếu từ một trang sang nhiều trang \cite{yu2025visrag}.
+
+Một thiết kế ứng dụng có thể giữ mã tài liệu, số trang và ảnh
+cùng với biểu diễn dùng để tìm kiếm. Khi phát hiện một kết quả
+nhạy với chữ nhỏ, hệ thống có thể chuyển ảnh cắt vùng tương ứng
+cho bộ sinh trong khi vẫn bảo toàn thông tin nguồn. Tầng truy
+xuất có thể đi từ trang đến vùng, còn tầng sinh cần nối kết quả
+với mã trang để người đọc kiểm tra. Những lựa chọn này cần được
+đánh giá về độ bao phủ lẫn chi phí xử lý các ảnh bổ sung.
+
 \section{Các khoảng trống nghiên cứu (Research Gaps) còn tồn tại}
 \label{sec:conc_gaps}
 
-\draftnote[TV2]{Nêu 4 khoảng trống mở có lập luận rõ ràng: (1) Chưa có hệ thống chuẩn kết hợp mượt cả 3 tầng Routing + Vision Retrieval + Reconciliation ở độ trễ thời gian thực; (2) Suy giảm hiệu năng khi tăng số trang ngữ cảnh ($k \ge 6$) và nén multi-vector trên trang dày đặc chữ; (3) Thiếu benchmark đa ngôn ngữ cho ngôn ngữ tài nguyên thấp (trong đó có tiếng Việt); (4) Chống nhiễu đối kháng (Adversarial Robustness) và khả năng giải thích chi tiết tới từng vùng chứng cứ.}
+\subsubsection{Nén chỉ mục đa vector ở quy mô lớn}
+
+Khi một trang có hơn một nghìn vector, chênh lệch dung lượng
+nhanh chóng tăng cùng số trang. Nén theo nhóm có thể giảm lặp ở
+các vùng nền và giảm chi phí xếp hạng. Nút thắt nằm ở các vùng
+nhỏ nhưng chứa đủ chứng cứ, chẳng hạn một ô ghi tỷ lệ trong bảng.
+Kết quả token pooling của ColPali cho thấy điểm trung bình giữ
+được 97,8\% ở hệ số 3, nhưng các trang dày chữ trong Shift nhạy
+hơn với nén \cite{faysse2025colpali}.
+
+Một thí nghiệm tiếp theo có thể chia tập truy vấn theo chứng cứ
+cần đọc và thay đổi hệ số gộp theo từng mức. Với mỗi mức, ghi
+nDCG, Recall, dung lượng đã lưu, độ trễ truy vấn ở phân vị 95
+và tốc độ bổ sung trang mới. Cần ghi thêm trường hợp trang đúng
+rơi khỏi danh sách ứng viên sau nén. Tập có nhiều biểu đồ và
+tập có nhiều bảng chữ nhỏ nên được báo cáo riêng để xem cùng
+một cấu hình phù hợp cho bao nhiêu loại tài liệu.
+
+\subsubsection{Suy luận nhiều trang và nhiều bước}
+
+Một câu hỏi nhiều bước có thể yêu cầu đọc một số liệu, tìm đơn
+vị ở trang khác rồi thực hiện phép tính. Nếu chỉ chấm việc tìm
+một trang đúng, phép đánh giá có thể bỏ qua việc hệ thống thiếu
+phần chứng cứ còn lại. Nếu chỉ chấm kết quả, đáp án đúng do
+suy đoán có thể được tính ngang với đáp án kiểm chứng được.
+Có thể gán nhãn tập trang cần dùng và kiểm tra cả độ bao phủ
+chứng cứ lẫn sự đúng đắn của phép nối thông tin.
+
+Khi tăng số ảnh trong ngữ cảnh, mô hình có thể thấy nhiều chứng
+cứ hơn nhưng cũng có thể chọn nhầm trang gần chủ đề. Bảng 3
+của VisRAG cho thấy lợi ích trung bình của cấu hình đa ảnh từ
+top-1 đến top-3, cùng sự khác biệt theo bộ dữ liệu. Một thí
+nghiệm có thể cố định trang đúng và thay đổi số trang nhiễu,
+thứ tự trang, độ phân giải và vị trí xuất hiện của chứng cứ.
+Kết quả cần ghi cả thời gian sinh, độ chính xác câu trả lời
+và tỷ lệ chỉ đúng các trang dùng để suy luận \cite{yu2025visrag}.
+
+\subsubsection{Định vị chứng cứ theo thời gian trong video dài}
+
+Slide 17 đặt temporal grounding như giới hạn của truy xuất thị
+giác ở quy mô lớn. Một clip ngắn thuận tiện cho xác định khung
+hình chứa sự kiện, nhưng có thể bỏ mất thông tin ngay trước hoặc
+sau mốc đó. Cửa sổ dài giữ nhiều bối cảnh và cần nhiều tài nguyên
+hơn khi chấm điểm hoặc đưa vào mô hình. UniversalRAG minh họa
+việc chọn giữa clip và video ở tầng định tuyến
+\cite{yeo2026universalrag}. Sau khi kho đã được chọn, vẫn cần
+xác định mốc thời gian thực sự hỗ trợ câu trả lời.
+
+Thử nghiệm trên video dài có thể đánh giá hai tầng. Tầng đầu
+truy xuất video hoặc cụm clip. Tầng sau tinh chỉnh vị trí đoạn
+liên quan. Cần ghi độ bao phủ video đúng, mức trùng khớp của
+đoạn thời gian và chi phí tính toán trên mỗi giờ video.
+Với một câu cần hai sự kiện cách xa nhau, điều kiện thành công
+phải yêu cầu tìm được cả hai mốc. Cách đánh giá này song song với
+bài toán tìm đủ trang trong tài liệu nhiều trang.
+
+\subsubsection{Chuyển miền sang tài liệu tiếng Việt và bản quét}
+
+Kết quả từ ViDoRe và sáu tập của VisRAG tạo cơ sở để chọn
+cấu hình thử nghiệm. Khi áp dụng vào tài liệu tiếng Việt,
+cần kiểm tra lại khả năng đọc dấu, nhận dạng chữ nhỏ và
+liên kết ô bảng với tiêu đề. Chẳng hạn, hồ sơ hành chính
+có thể chứa con dấu chồng lên tên đơn vị, còn báo cáo tài
+chính có cột đơn vị ghi ở chú thích riêng. Cả hai đều
+chứa chữ và bố cục, nhưng cách làm hỏng chứng cứ khác
+nhau. Một phép đo theo nhóm bản quét, PDF sinh từ máy và
+tài liệu nhiều bảng sẽ cho biết mức độ chuyển miền rõ
+hơn so với một điểm trung bình duy nhất.
+
+Tiếng Việt cũng đặt ra yêu cầu về cách viết câu hỏi.
+Một mã biểu mẫu có thể xuất hiện cùng cách gọi tắt ở
+phần đầu và tên đầy đủ ở phần phụ lục. Người dùng có
+thể hỏi bằng tên tắt, cách gõ có dấu hoặc dạng thiếu dấu.
+Có thể giữ nguyên trang chứng cứ rồi tạo các biến thể
+câu hỏi phù hợp với thói quen tra cứu. Đo vị trí của cùng
+một trang qua các biến thể giúp tách lỗi ở biểu diễn
+truy vấn khỏi lỗi do độ phân giải và bố cục trang. Đối
+với tìm mã, điểm thành công cần xét đúng từng ký tự.
+Đối với tìm chủ đề, người đánh giá có thể chấp nhận các
+trang khác nếu chúng chứa đủ chứng cứ cho câu trả lời.
+
+Một thiết lập kiểm tra chất lượng ảnh có thể giữ cùng
+PDF, trang và truy vấn, rồi so sánh ảnh gốc với phiên
+bản giảm độ phân giải hoặc nghiêng nhẹ. Với ColPali, theo
+dõi trang đúng và độ ổn định của các vùng đạt điểm
+MaxSim cao. Với VisRAG, giữ nguyên danh sách trang
+Oracle khi đo khả năng đọc của bộ sinh, sau đó đo lại
+trong chế độ truy xuất thực tế. Nếu điểm Oracle giảm khi
+thay chất lượng ảnh, lỗi đọc vẫn tồn tại dù đã tìm đúng
+trang. Nếu Oracle ổn định nhưng Recall giảm, bước lập
+chỉ mục hoặc khớp truy vấn cần được xem xét trước. Cách
+bố trí này kiểm tra trực tiếp các giả thuyết về ảnh
+trang và lỗi lan truyền ở slide 7, 8 và 16.
+
+Trong một kho thật, lỗi điển hình có thể hiếm nhưng gây
+hậu quả lớn, chẳng hạn đọc nhầm một chữ số hoặc đơn vị
+trong bảng công nợ. Bộ thử nên ghi đồng thời tỷ lệ tìm
+đúng trang, tỷ lệ đọc chính xác giá trị và tỷ lệ dẫn được
+chứng cứ. Kết quả cần chỉ ra nhóm nào chịu ảnh hưởng khi
+nén chỉ mục hoặc giới hạn số ảnh, rồi đối chiếu mức tiết
+kiệm bộ nhớ và thời gian của cấu hình tương ứng. Đây là
+một hướng kiểm chứng cho báo cáo, với thí nghiệm gốc của
+ColPali và VisRAG làm mốc tham khảo
+\cite{faysse2025colpali,yu2025visrag}.
+
+Một câu hỏi chung của ba hướng là hệ thống có thể cung cấp đủ
+chứng cứ trong giới hạn thời gian và bộ nhớ hay không. Phép đo
+trên một tập truy vấn thống nhất cần ghi rõ kho đã chọn, tập
+trang hoặc đoạn đã lấy, chất lượng câu trả lời và thời gian đầu
+cuối. Những chỉ số đó cho phép gắn kết quả của từng tầng với
+lợi ích quan sát được đối với người đọc.
