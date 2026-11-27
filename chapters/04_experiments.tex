@@ -13,7 +13,7 @@
 \section{Tổng quan bộ dữ liệu và benchmark đánh giá}
 \label{sec:exp_datasets}
 
-\draftnote[TV1 + TV2 + TV3]{Mỗi thành viên điền và phân tích nhóm benchmark thuộc phần mình phụ trách vào Bảng~\ref{tab:benchmarks}: ViDoRe 10 tác vụ Anh--Pháp (ColPali); 6 tập VQA + BEIR (VisRAG); 10 tập ID + 6 tập OOD (UniversalRAG); InfoSeek \& Encyclopedic-VQA (CoRe-MMRAG). Nêu rõ đặc điểm thống kê cơ bản cần thiết để hiểu và đối chiếu kết quả.}
+\draftnote[TV3]{Điền và phân tích nhóm benchmark InfoSeek \& Encyclopedic-VQA (CoRe-MMRAG) vào Bảng~\ref{tab:benchmarks}.}
 
 \begin{table}[H]
 \centering
@@ -26,15 +26,58 @@
 \rowcolor{tblhead}
 \thead{Nhóm / Benchmark} & \thead{Bài báo} & \thead{Phương thức} & \thead{Đặc điểm nổi bật \& Thách thức} \\
 \midrule
-ViDoRe & ColPali & \dots & \dots \\
+ViDoRe & ColPali & Ảnh trang & 10 tác vụ truy xuất trang tiếng Anh và tiếng Pháp \cite{faysse2025colpali} \\
 \rowcolor{zebrabg}
-6 tập VQA + BEIR & VisRAG & \dots & \dots \\
+6 tập VQA + BEIR & VisRAG & Ảnh trang & Sáu tập VQA dùng cho đánh giá chính. Ba tập BEIR được dùng để kiểm tra truy xuất văn bản kết xuất thành ảnh \cite{yu2025visrag} \\
 10 tập ID + 6 tập OOD & UniversalRAG & Văn bản, bảng, ảnh, video & 7 lựa chọn định tuyến theo phương thức và mức độ chi tiết (10 tập ID chia 3:7; 6 tập OOD chỉ dùng kiểm thử); đánh giá cả truy xuất đơn kho và liên phương thức \cite{yeo2026universalrag} \\
 \rowcolor{zebrabg}
 InfoSeek \& Enc-VQA & CoRe-MMRAG & \dots & \dots \\
 \bottomrule
 \end{tabularx}
 \end{table}
+
+\paragraph{Các tác vụ truy xuất trang trong ViDoRe.}
+Bảng 1 của ColPali chia ViDoRe thành năm tác vụ học thuật và năm
+tác vụ thực tiễn. Nhóm học thuật chuyển câu hỏi từ DocVQA, InfoVQA,
+TAT-DQA, ArXivQA và TabFQuAD thành truy vấn tìm trang. Các loại tài
+liệu tương ứng gồm bản quét, infographic, báo cáo tài chính, hình
+trong bài báo khoa học và bảng tiếng Pháp. Quy mô khác nhau giữa
+các tác vụ. ArXivQA, DocVQA và InfoVQA mỗi tập có 500 truy vấn,
+TAT-DQA có 1600 và TabFQuAD có 210. Nhóm thực tiễn gồm AI, Energy,
+Government, Healthcare và Shift Project. Mỗi tác vụ trong nhóm
+này có 100 truy vấn với 1000 trang ứng viên về cùng chủ đề. Nhiều
+trang có từ vựng gần nhau, nên mô hình cần phân biệt dựa trên nội
+dung cụ thể chứ không chỉ nhận ra chủ đề \cite{faysse2025colpali}.
+
+TabFQuAD và Shift Project là hai tác vụ tiếng Pháp trong ViDoRe.
+Việc có một tập bảng và một tập báo cáo thực tế giúp xem mô hình
+ứng xử ra sao khi thay đổi cả ngôn ngữ và kiểu bố cục. Kết quả của
+chúng mô tả hai điều kiện đánh giá riêng. Chúng không đại diện
+cho mọi tập tài liệu ngoài tiếng Anh hoặc cho tiếng Việt. Khi so
+sánh bản huấn luyện gốc với biến thể thêm dữ liệu tiếng Pháp,
+cần ghi rõ tập nào đã được đưa vào huấn luyện.
+
+\paragraph{Các tập hỏi đáp trực quan của VisRAG.}
+Bảng đối chiếu chính của VisRAG gồm sáu tập. ArXivQA, ChartQA và PlotQA tập trung
+vào hiểu hình và biểu đồ. DocVQA và SlideVQA có nội dung dạng
+tài liệu và trình chiếu, trong đó câu hỏi có thể cần tìm chữ,
+bảng hoặc thông tin trải trên nhiều trang. InfoVQA thường kết
+hợp nhãn, hình và bố cục infographic. Tên tập chỉ mô tả nguồn
+dữ liệu. Một tập vẫn có nhiều câu hỏi cần các kiểu chứng cứ khác
+nhau. Để kiểm định cách giải thích theo kiểu tài liệu, nên nhóm
+truy vấn theo chứng cứ cần dùng thay vì chỉ dùng tên benchmark
+\cite{yu2025visrag}.
+
+Thiết lập \textit{in-domain} của Bảng 2 dùng dữ liệu huấn luyện
+VQA cùng dữ liệu tổng hợp. Trong thiết lập \textit{out-of-domain}
+của bài, bộ truy xuất chỉ dùng dữ liệu tổng hợp trước khi đánh
+giá trên các tập VQA. Bài còn có thí nghiệm riêng trên SciFact,
+NFCorpus và SciDocs của BEIR ở Phụ lục I. Với VisRAG-Ret, tác
+giả kết xuất văn bản BEIR thành ảnh rồi truy xuất theo ảnh.
+Cấu hình đối chứng nhận văn bản gốc. Thí nghiệm BEIR dùng
+nDCG@10, nên được đọc như kiểm tra bổ sung về tài liệu thiên về
+chữ và không tham gia trung bình MRR@10 của sáu tập chính
+\cite{yu2025visrag}.
 
 % TV1: Dataset and evaluation protocol breakdown for UniversalRAG
 \paragraph{Hệ thống 16 bộ dữ liệu đa phương thức và nhiều mức độ chi tiết của UniversalRAG.}
@@ -55,7 +98,69 @@ Khi đọc số liệu của bài báo (Phụ lục~A.1--A.3 của \cite{yeo2026
 \section{Hệ thống độ đo đánh giá}
 \label{sec:exp_metrics}
 
-\draftnote[TV2]{Trình bày ngắn gọn định nghĩa, công thức chính và ý nghĩa khác biệt của 3 nhóm độ đo: (1) Truy xuất ($\mathrm{MRR}@K$, $\mathrm{nDCG}@K$, $\mathrm{Recall}@K$); (2) Tạo sinh \& Định tuyến ($\mathrm{EM}$, $\mathrm{Relaxed\ EM\ (\pm 5\%)}$, $\mathrm{VQA\ Accuracy}$, $\mathrm{BEM}$, $\mathrm{Routing\ Accuracy}$); (3) Hiệu năng hệ thống (Offline Indexing Latency, Online Query Latency, Storage Footprint KB/page).}
+\paragraph{Độ đo truy xuất.}
+Với $Q$ truy vấn, $r_q$ là thứ hạng của trang liên quan đầu tiên.
+Đặt $\mathrm{RR}_q@K=1/r_q$ nếu $r_q\le K$, và bằng 0 nếu top-$K$
+vắng trang liên quan. Khi đó
+\begin{equation}
+    \mathrm{MRR}@K=\frac{1}{Q}\sum_{q=1}^{Q}\mathrm{RR}_q@K.
+    \label{eq:tv2_mrr}
+\end{equation}
+Một trang đúng đứng hạng 1, 2 hoặc 3 lần lượt đóng góp 1,
+$1/2$ và $1/3$. Bài VisRAG trình bày MRR@10 trên thang 0--100.
+Ví dụ, 77,91 nghĩa là MRR@10 bằng 0,7791. Đây là trung bình của
+các nghịch đảo thứ hạng nên không thể diễn giải thành tỷ lệ
+77,91\% truy vấn có trang đúng ở hạng 1.
+
+Gọi $R_q$ là tập trang liên quan và $T_K(q)$ là tập trang trong
+top-$K$. Recall của một truy vấn là
+$\lvert R_q\cap T_K(q)\rvert/\lvert R_q\rvert$.
+Nếu mỗi truy vấn chỉ có một trang được gán nhãn đúng, Recall
+trung bình cũng là tỷ lệ truy vấn có trang đó trong top-$K$.
+Khi một câu cần hai trang, lấy được một trong số đó cho
+Recall bằng $1/2$. MRR vẫn có thể bằng 1 nếu trang đầu tiên
+đúng ở hạng 1. Chênh lệch này quan trọng ở bài toán nhiều trang
+vì mô hình có thể thấy chứng cứ đầu tiên nhưng thiếu phần còn lại.
+
+Với nhãn liên quan $g_j$ ở vị trí $j$, một dạng của tổng lợi ích
+chiết khấu là
+\begin{equation}
+    \mathrm{DCG}@K = \sum_{j=1}^{K}
+    \frac{2^{g_j}-1}{\log_2(j+1)},
+    \qquad
+    \mathrm{nDCG}@K = \frac{\mathrm{DCG}@K}{\mathrm{IDCG}@K},
+    \label{eq:tv2_ndcg}
+\end{equation}
+trong đó $\mathrm{IDCG}$ lấy từ thứ hạng lý tưởng của cùng truy
+vấn. Chỉ số này thưởng việc đưa nhiều trang liên quan lên vị trí
+cao. ViDoRe dùng nDCG@5 làm kết quả chính, còn Bảng 2 của VisRAG
+dùng MRR@10. Vì hai bảng khác cả tập kiểm thử, hàm chiết khấu
+và ngưỡng $K$, các giá trị trung bình phải được đọc trong
+từng thiết lập \cite{faysse2025colpali,yu2025visrag}.
+
+\paragraph{Độ đo tạo sinh.}
+Exact Match (EM) so câu trả lời với đáp án chuẩn sau bước
+chuẩn hóa đã quy định. Relaxed EM cho phép sai số trong điều
+kiện cụ thể. Chẳng hạn, một bài hỏi đáp biểu đồ có thể chấp nhận
+giá trị số trong một dung sai. Cần nêu dung sai và quy tắc với
+đáp án phi số trước khi so sánh. F1 theo token là trung bình điều
+hòa của precision và recall, nên trả lời đúng một phần vẫn có
+thể có điểm. ROUGE-L xét dãy con chung dài nhất, còn BERTScore
+dùng độ tương đồng biểu diễn token. Hai độ đo sau có thể dùng
+khi đánh giá câu dài hoặc diễn đạt lại. Điểm tương đồng văn bản
+cần đi cùng kiểm tra giá trị, đơn vị và nguồn chứng cứ khi mục
+tiêu là đọc tài liệu. Các bảng tạo sinh của VisRAG được phân
+tích theo tiêu chí accuracy do tác giả báo cáo.
+
+\paragraph{Độ đo chi phí.}
+Thời gian lập chỉ mục ngoại tuyến có thể gồm kết xuất, phân
+tích bố cục, OCR, tạo mô tả và mã hóa, tùy pipeline. Độ trễ
+trực tuyến gồm mã hóa truy vấn và tìm kiếm, sau đó có thể thêm
+chi phí đọc ảnh hoặc tạo sinh. Nên ghi cấu hình máy, kích thước
+lô, số lượng trang, độ phân giải ảnh và các công đoạn đã tính.
+Về bộ nhớ, kích thước vector mỗi trang phản ánh một phần chi
+phí. Chỉ mục ANN, ảnh gốc, metadata và mô hình tạo thành các
+phần chi phí riêng khi triển khai.
 
 % ------------------------------------------------------------------------------
 \section{Phân tích tính khả so sánh và đối chiếu kết quả định lượng}
@@ -69,26 +174,326 @@ Khi đọc số liệu của bài báo (Phụ lục~A.1--A.3 của \cite{yeo2026
 \subsection{Tổng hợp kết quả định lượng theo từng nhóm bài toán}
 \label{subsec:quantitative_tables}
 
-\draftnote[TV2]{Điền Bảng~\ref{tab:vision_vs_text_retrieval} (đối chiếu Vision-space ColPali, ColQwen2, VisRAG-Ret với TextRAG OCR/Captioning, SigLIP, BiPali, ColSigLIP kèm trích nguồn Bảng/Hình bài gốc). Đồng thời bổ sung thêm 1 bảng hoặc mục phân tích nhỏ cho: (a) End-to-End Generation của VisRAG (MiniCPM-V 2.6, GPT-4o, top-1/3/6/10, BEIR); (b) Ablation Study của ColPali (448 vs 224, OOD DocMatix, bỏ \texttt{<unused0>}, Token Pooling factor=3).}
+\subsubsection{ColPali và pipeline OCR trên ViDoRe}
+\label{subsec:tv2_colpali_results}
 
-\begin{table}[H]
+Đối chứng ở slide 14 dùng hàng Unstructured + OCR + BGE-M3
+trong Bảng 2 của ColPali. Hai hệ thống đều chấm ở cấp trang và
+cùng dùng nDCG@5. Bảng~\ref{tab:tv2_vidore} trình bày cả mười
+tác vụ để thấy mức cải thiện phân bố ra sao.
+
+\begin{table}[htbp]
 \centering
 \small
-\caption[Đối chiếu hiệu năng truy xuất, tốc độ và dung lượng giữa Vision-space RAG và TextRAG]{Đối chiếu hiệu năng truy xuất, tốc độ và dung lượng lưu trữ giữa Vision-space RAG và TextRAG.}
-\label{tab:vision_vs_text_retrieval}
-\renewcommand{\arraystretch}{1.24}
-\begin{tabularx}{\textwidth}{@{}L M{2.05cm} M{2.15cm} M{1.75cm} M{2.05cm}@{}}
+\caption[ColPali và BGE-M3 + OCR trên ViDoRe]{Điểm nDCG@5 trên ViDoRe. Nguồn: Bảng 2 của \cite{faysse2025colpali}. Chênh lệch tính theo điểm tuyệt đối.}
+\label{tab:tv2_vidore}
+\renewcommand{\arraystretch}{1.18}
+\begin{tabularx}{\textwidth}{@{}L M{3.4cm} M{2.3cm} M{2.4cm}@{}}
 \toprule
 \rowcolor{tblhead}
-\thead{Phương pháp} & \thead{ViDoRe\newline (nDCG@5)} & \thead{VisRAG ID\newline (MRR@10)} & \thead{Index /\newline trang} & \thead{Dung lượng /\newline trang} \\
+\thead{Tác vụ} & \thead{BGE-M3 + OCR} & \thead{ColPali} & \thead{Chênh lệch} \\
 \midrule
-Baseline TextRAG / VLM & \dots & \dots & \dots & \dots \\
+ArXivQA & 31,4 & 79,1 & $+47{,}7$ \\
 \rowcolor{zebrabg}
-ColPali / ColQwen2 & \dots & \dots & \dots & \dots \\
-VisRAG-Ret & \dots & \dots & \dots & \dots \\
+DocVQA & 25,7 & 54,4 & $+28{,}7$ \\
+InfoVQA & 60,1 & 81,8 & $+21{,}7$ \\
+\rowcolor{zebrabg}
+TabFQuAD & 70,8 & 83,9 & $+13{,}1$ \\
+TAT-DQA & 50,5 & 65,8 & $+15{,}3$ \\
+\rowcolor{zebrabg}
+Shift Project & 73,2 & 73,2 & $0{,}0$ \\
+AI & 90,2 & 96,2 & $+6{,}0$ \\
+\rowcolor{zebrabg}
+Energy & 83,6 & 91,0 & $+7{,}4$ \\
+Government & 84,9 & 92,7 & $+7{,}8$ \\
+\rowcolor{zebrabg}
+Healthcare & 91,1 & 94,4 & $+3{,}3$ \\
+\textbf{Trung bình báo cáo} & \textbf{66,1} & \textbf{81,3} & $\mathbf{+15{,}2}$ \\
 \bottomrule
 \end{tabularx}
 \end{table}
+
+ArXivQA tăng 47,7 điểm, InfoVQA tăng 21,7 điểm, còn TabFQuAD
+tăng 13,1 điểm. Các nhóm này yêu cầu khai thác vùng hình,
+infographic và quan hệ hàng--cột. Shift có cùng điểm 73,2
+ở hai cấu hình, còn Healthcare chỉ chênh 3,3 điểm. BGE-M3 + OCR
+đã đạt 91,1 ở Healthcare, nên khoảng tăng còn lại ít hơn một
+số tác vụ thị giác. Các kết quả này ủng hộ giả thuyết rằng
+giữ ảnh trang hữu ích khi chứng cứ phụ thuộc bố cục, đồng thời
+cho thấy mức lợi ích phụ thuộc kiểu tài liệu \cite{faysse2025colpali}.
+
+Đối chứng BiPali trong cùng bảng đạt 58,8 điểm trung bình.
+BiPali cũng dùng PaliGemma nhưng gộp biểu diễn trang thành một
+vector. So sánh 58,8 với 81,3 là chứng cứ sát hơn cho vai trò
+của tương tác theo token trong họ PaliGemma. So sánh 66,1 với
+81,3 phản ánh hai hệ thống khác nhau về cả tiền xử lý, bộ mã
+hóa, dữ liệu huấn luyện và phép chấm. Do đó mức chênh 15,2 điểm
+không thể quy hết cho riêng OCR hoặc MaxSim. Ở một đối chứng
+khác, Unstructured + Captioning + BGE-M3 đạt 67,0 điểm. Việc
+thêm mô tả ảnh cho baseline giúp phân tích giới hạn của việc
+chuyển thông tin thị giác sang văn bản \cite{faysse2025colpali}.
+
+\subsubsection{So sánh trực tiếp trên sáu tập VisRAG}
+\label{subsec:tv2_visrag_ret_results}
+
+Bảng~\ref{tab:tv2_visrag_mrr} lấy từ hàng \textit{in-domain}
+của Bảng 2 trong VisRAG. Nhóm tác giả huấn luyện lại ColPali
+trên dữ liệu VisRAG bằng mã và siêu tham số từ công trình
+gốc. Đây là đối chứng trực tiếp dành cho tầng tìm trang trong
+slide 9 và 14. Kết quả ColPali ở đây thuộc phiên bản đã
+huấn luyện lại. Điểm ViDoRe trong bảng trước thuộc điều kiện
+đánh giá của bài ColPali \cite{yu2025visrag}.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption[MRR@10 của ColPali và VisRAG-Ret]{MRR@10 theo Bảng 2(c) của \cite{yu2025visrag}. Cột cuối lấy VisRAG-Ret trừ ColPali.}
+\label{tab:tv2_visrag_mrr}
+\renewcommand{\arraystretch}{1.18}
+\begin{tabularx}{\textwidth}{@{}L M{2.4cm} M{2.6cm} M{2.6cm}@{}}
+\toprule
+\rowcolor{tblhead}
+\thead{Bộ dữ liệu} & \thead{ColPali} & \thead{VisRAG-Ret} & \thead{Chênh lệch} \\
+\midrule
+ArXivQA & 72,50 & 75,11 & $+2{,}61$ \\
+\rowcolor{zebrabg}
+ChartQA & 73,49 & 76,63 & $+3{,}14$ \\
+DocVQA & 82,79 & 75,37 & $-7{,}42$ \\
+\rowcolor{zebrabg}
+InfoVQA & 81,15 & 86,37 & $+5{,}22$ \\
+PlotQA & 55,32 & 62,14 & $+6{,}82$ \\
+\rowcolor{zebrabg}
+SlideVQA & 93,99 & 91,85 & $-2{,}14$ \\
+\textbf{Trung bình báo cáo} & \textbf{76,54} & \textbf{77,91} & $\mathbf{+1{,}37}$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+DocVQA là nơi ColPali dẫn 7,42 điểm. SlideVQA cũng nghiêng về
+ColPali, với khoảng cách 2,14 điểm. VisRAG-Ret dẫn 5,22 điểm
+ở InfoVQA và 6,82 điểm ở PlotQA. Đây là cơ sở cho nhận xét của
+slide về lợi thế theo loại tài liệu. Có thể đặt giả thuyết
+rằng khớp token giúp giữ chữ và vùng bảng nhỏ, còn vector
+gộp học tốt một số tín hiệu tổng thể của hình. Bảng kết quả
+không kiểm soát riêng cách gộp, vì hai hệ thống có backbone
+và mục tiêu huấn luyện khác nhau. Kiểm định giả thuyết này cần
+đối chứng cùng backbone và nhãn kiểu chứng cứ trên từng truy vấn.
+
+Trong cùng thiết lập, MiniCPM (OCR) đạt 74,78 MRR@10, còn
+MiniCPM (Captioner) đạt 69,78. VisRAG-Ret đạt 71,49 khi chỉ
+huấn luyện trên dữ liệu tổng hợp và 77,91 khi dùng thêm dữ
+liệu in-domain. So sánh hai mức này cho thấy vai trò của phân
+phối huấn luyện. Bảng không có hàng ColPali huấn luyện chỉ
+bằng dữ liệu tổng hợp, nên đối chiếu ColPali với VisRAG nên
+giữ trong phạm vi cột \textit{in-domain}. Trung bình hai mô
+hình cách nhau 1,37 \textit{điểm}, không phải 1,37\% cải
+thiện tương đối. Tỷ lệ tương đối tính theo nền 76,54 vào
+khoảng 1,79\% \cite{yu2025visrag}.
+
+\paragraph{Truy xuất ngoài tập hỏi đáp trực quan.}
+Phụ lục I của VisRAG thử bộ truy xuất trên ba tập văn bản
+trong BEIR. Tác giả kết xuất văn bản thành ảnh có cùng quy
+tắc về phông và chiều rộng để bộ truy xuất ảnh xử lý.
+MiniCPM dùng văn bản gốc trong phép đo này, dù bảng gọi
+hàng đó là MiniCPM (OCR) để nhất quán tên cấu hình.
+Bảng~\ref{tab:tv2_beir} giữ nDCG@10 theo đúng ngưỡng của
+phụ lục, khác với ngưỡng nDCG@5 trong ViDoRe.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption[Truy xuất văn bản kết xuất thành ảnh trên BEIR]{Điểm nDCG@10 trên ba tập của BEIR. Nguồn: Bảng 13 của \cite{yu2025visrag}.}
+\label{tab:tv2_beir}
+\renewcommand{\arraystretch}{1.18}
+\begin{tabularx}{\textwidth}{@{}L M{2.9cm} M{2.9cm} M{2.6cm}@{}}
+\toprule
+\rowcolor{tblhead}
+\thead{Tập} & \thead{MiniCPM văn bản} & \thead{VisRAG-Ret ảnh} & \thead{Chênh lệch} \\
+\midrule
+SciFact & 61,04 & 62,47 & $+1{,}43$ \\
+\rowcolor{zebrabg}
+NFCorpus & 14,12 & 27,02 & $+12{,}90$ \\
+SciDocs & 13,01 & 16,25 & $+3{,}24$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Trong thiết lập này, VisRAG-Ret cao hơn đối chứng trên ba
+tập. SciFact chênh 1,43 điểm, còn NFCorpus chênh 12,90
+điểm. Mức chênh có thể thay đổi theo tập dù quy tắc kết
+xuất giống nhau. Các ảnh được tạo từ văn bản với phông và
+chiều rộng quy định, nên thí nghiệm cho biết VLM có thể
+tận dụng tín hiệu chữ trong điều kiện đó. Bản quét thật
+có thêm nhiễu, xoay trang, thay đổi kiểu chữ và ngôn ngữ.
+Kết quả BEIR vì vậy bổ sung một đối chứng cạnh slide 13,
+nơi nhóm tập trung vào tài liệu có bảng và biểu đồ, và
+cần một phép thử riêng nếu muốn suy rộng sang PDF quét
+\cite{yu2025visrag}.
+
+\subsubsection{Chi phí lập chỉ mục, truy vấn và lưu trữ}
+\label{subsec:tv2_index_results}
+
+Đồ thị ở slide 3 lấy từ Hình 2 của ColPali. Theo Bảng 5,
+pipeline có phát hiện bố cục, OCR, mô tả và mã hóa mất
+tương ứng 0,81, 2,67, 3,71 và 0,03 giây mỗi trang.
+OCR cùng bước mô tả chiếm khoảng $6{,}38/7{,}22=88{,}4\%$
+tổng thời gian. ColPali dùng 0,39 giây mỗi trang, tương
+ứng tỷ lệ khoảng 18,5 lần ở thiết lập được báo cáo.
+Cấu hình SigLIP lập chỉ mục trong 0,12 giây mỗi trang.
+Mức thời gian này cần đọc cùng chất lượng truy xuất và
+loại truy vấn mục tiêu \cite{faysse2025colpali}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/tv2/colpali-indexing.png}
+    \caption[Độ trễ lập chỉ mục trong bài ColPali]{Độ trễ lập chỉ mục ngoại tuyến theo từng công đoạn. Nguồn: Hình 2 của \cite{faysse2025colpali}, dùng ở slide 3.}
+    \label{fig:tv2_index_cost}
+\end{figure}
+
+Mốc 7,22 giây bao gồm bước tạo mô tả ảnh. Hàng 66,1 nDCG@5
+ở bảng ViDoRe dùng baseline BGE-M3 + OCR. Hai con số này đo
+hai khía cạnh của nhóm TextRAG theo các thiết lập mô tả trong
+bài. Hệ số 18,5 lần chỉ mô tả lập chỉ mục ngoại tuyến của
+cấu hình có đủ công đoạn đã nêu. Với truy vấn trực tuyến,
+ColPali báo cáo mã hóa khoảng 30\,ms và BGE-M3 khoảng
+22\,ms trong thiết lập của bài. Nếu cần thời gian trả lời
+của cả pipeline, phải cộng chi phí tìm kiếm và tạo sinh
+thực tế \cite{faysse2025colpali}.
+
+Phụ lục H của VisRAG cung cấp một phép đo khác. Trên PlotQA,
+MiniCPM (OCR) mất 312\,ms cho lập chỉ mục mỗi trang, gồm
+284\,ms phân tích và 28\,ms mã hóa. VisRAG-Ret mã hóa ảnh
+trong 121\,ms. Độ trễ trực tuyến ở bảng đều là 54\,ms.
+Tác giả dùng A100 40\,GB cho bước mã hóa, một lõi Xeon cho
+phân tích và lô kích thước 1. Đây là so sánh có thể dùng
+giữa hai hàng trong thí nghiệm VisRAG. Muốn đối chiếu trực
+tiếp 121\,ms với 390\,ms của ColPali cần đo hai hệ thống
+trên cùng tập trang, phần cứng và quy tắc kết xuất
+\cite{yu2025visrag,faysse2025colpali}.
+
+\subsubsection{Kết quả tạo sinh và phân tách lỗi}
+\label{subsec:tv2_generation}
+
+Slide 15 dùng sơ đồ dòng để theo dõi trạng thái của 718
+truy vấn InfographicsVQA. TextRAG tìm được trang đúng ở
+hạng 1 cho 552 câu, trong đó 178 câu qua được cả tầng
+tạo sinh. VisRAG tìm đúng trang cho 570 câu và trả lời
+đúng ở cả hai bước cho 367 câu. Tính theo toàn bộ 718 câu,
+tỷ lệ hoàn thành hai bước tăng từ 24,8\% lên 51,1\%.
+Tính riêng trên số câu đã tìm đúng trang, tỷ lệ tạo đáp
+án đúng là $178/552\approx32{,}2\%$ so với
+$367/570\approx64{,}4\%$. Việc giữ ảnh trang đem lại chênh
+lệch lớn ngay trong phần truy vấn đã có trang đúng.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/tv2/visrag-sankey.png}
+    \caption[Truy xuất và tạo sinh trên InfographicsVQA]{Luồng kết quả của TextRAG và VisRAG trên InfographicsVQA. Nguồn: Hình 3 của \cite{yu2025visrag}, dùng ở slide 15. Phân tích dùng số lượng ghi trên các nhánh.}
+    \label{fig:tv2_visrag_sankey}
+\end{figure}
+
+Hình~\ref{fig:tv2_visrag_sankey} ghi 203 câu VisRAG có
+trang đúng nhưng sinh sai, khớp phép trừ $570-367=203$.
+Mốc tỷ lệ 24,3\% trên nhánh đó không khớp mẫu số 718.
+Số lượng 203 tương ứng khoảng 28,3\% toàn bộ truy vấn.
+Tỷ lệ thành công 51,1\% được kiểm tra bằng phép chia
+$367/718$, nhất quán với kết quả tóm tắt ở slide.
+So sánh các nhánh theo số đếm giúp tránh nhầm tỷ lệ trên
+toàn tập với tỷ lệ có điều kiện ở tầng sinh.
+
+Slide 15 cũng đối chiếu accuracy trung bình đầu cuối.
+Các cặp điểm trình bày là 37,97 so với 53,32 cho
+MiniCPM-V 2.6 và 43,54 so với 52,44 cho GPT-4o. Các mức
+chênh tương ứng là 15,35 và 8,90 điểm theo bảng tóm tắt
+của slide, tương ứng khoảng 40\% và 20\% tương đối như
+Hình 1 của VisRAG. Đây là so sánh đầu cuối giữa hai
+pipeline. Bảng 3 dưới đây trả lời câu hỏi khác bằng cách
+giữ VisRAG-Ret cố định rồi thay đổi bộ sinh hoặc số trang
+\cite{yu2025visrag}.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption[Accuracy theo kiểu bộ sinh và số trang]{Accuracy trung bình trên sáu tập khi giữ VisRAG-Ret cố định. Nguồn: Bảng 3 của \cite{yu2025visrag}.}
+\label{tab:tv2_gen}
+\renewcommand{\arraystretch}{1.18}
+\begin{tabularx}{\textwidth}{@{}L M{2.0cm} M{2.0cm} M{2.0cm} M{2.1cm}@{}}
+\toprule
+\rowcolor{tblhead}
+\thead{Bộ sinh / Cách cấp ảnh} & \thead{Top-1} & \thead{Top-2} & \thead{Top-3} & \thead{Oracle} \\
+\midrule
+MiniCPM-V 2.0, ghép ảnh & 36,16 & 29,95 & 28,96 & 41,58 \\
+\rowcolor{zebrabg}
+MiniCPM-V 2.0, chọn theo trọng số & 36,16 & 36,10 & 35,50 & 41,91 \\
+MiniCPM-V 2.6, nhiều ảnh & 53,32 & 54,92 & 56,12 & 67,78 \\
+\rowcolor{zebrabg}
+GPT-4o, nhiều ảnh & 52,44 & 53,69 & 54,98 & 63,49 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Từ top-1 đến top-3, ghép trang giảm 7,20 điểm trung bình,
+còn chọn theo trọng số giảm 0,66 điểm. MiniCPM-V 2.6 tăng
+2,80 điểm và GPT-4o tăng 2,54 điểm khi nhận từng ảnh. Trên
+một số tập, thêm ảnh vẫn có thể làm điểm giảm. Chẳng hạn
+MiniCPM-V 2.6 trên PlotQA đạt 40,79 ở top-1 và 38,93 ở
+top-3. Kết quả trung bình hỗ trợ dùng VLM nhiều ảnh khi
+cần mở rộng ngữ cảnh. Điểm số của từng tập giúp xác định
+điều kiện mà ảnh bổ sung gây nhiễu. Thiết lập Oracle chỉ
+đưa các trang đúng cho bộ sinh. Khoảng cách giữa Oracle
+và top-3 phản ánh phần tiềm năng khi cải thiện tập trang
+đầu vào trong cùng điều kiện, cùng giới hạn đọc của
+mô hình \cite{yu2025visrag}.
+
+\subsubsection{Ablation và nén biểu diễn đa vector}
+\label{subsec:tv2_ablation}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption[Biến thể mô hình ColPali trên ViDoRe]{Một số đối chứng trong Bảng 7 của \cite{faysse2025colpali}. Chênh lệch tính so với điểm tham chiếu 81,3.}
+\label{tab:tv2_ablation}
+\renewcommand{\arraystretch}{1.18}
+\begin{tabularx}{\textwidth}{@{}L M{2.4cm} M{2.8cm}@{}}
+\toprule
+\rowcolor{tblhead}
+\thead{Cấu hình} & \thead{nDCG@5} & \thead{Chênh lệch} \\
+\midrule
+ColPali tham chiếu, ảnh 448 & 81,3 & $0{,}0$ \\
+\rowcolor{zebrabg}
+Ảnh 224 & 56,5 & $-24{,}8$ \\
+Chỉ huấn luyện trên DocMatix & 79,1 & $-2{,}2$ \\
+\rowcolor{zebrabg}
+Bỏ token mở rộng truy vấn & 79,6 & $-1{,}7$ \\
+Huấn luyện thêm vision encoder & 80,6 & $-0{,}7$ \\
+\rowcolor{zebrabg}
+Bỏ mất mát so sánh cặp & 79,7 & $-1{,}6$ \\
+ColQwen2, giới hạn 768 mảnh ảnh & 86,6 & $+5{,}3$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Khi giảm kích thước ảnh từ cấu hình tham chiếu 448
+xuống 224, nDCG@5 trung bình giảm 24,8 điểm. Thay đổi độ
+phân giải cũng thay đổi chi tiết nhìn thấy của trang và
+cách biểu diễn, nên kết quả không đủ để quy mức giảm
+cho một biến riêng. Với DocMatix, điểm giảm nhẹ hơn.
+So sánh này cho tín hiệu về chuyển miền khi huấn luyện
+trên tập dữ liệu khác hẳn. Biến thể bỏ token mở rộng
+giảm 1,7 điểm theo trung bình Bảng 7, vì vậy nên đọc
+giá trị từng tác vụ trực tiếp từ bảng khi phân tích
+theo ngôn ngữ \cite{faysse2025colpali}.
+
+Một lựa chọn khác là giữ ảnh lúc mã hóa rồi nén các
+vector ở bước tạo chỉ mục. Trong Hình 3 của ColPali,
+token pooling phân cấp với hệ số 3 giảm khoảng 66,7\%
+số vector và giữ 97,8\% hiệu năng ban đầu theo số liệu
+của tác giả. Đây là tỷ lệ giữ hiệu năng, không phải
+điểm nDCG@5 tuyệt đối. Shift, tập có nhiều trang dày chữ,
+suy giảm nhiều hơn xu hướng chung. Khi đánh giá nén,
+cần báo cáo cùng lúc dung lượng, chất lượng theo kiểu
+trang và độ trễ truy vấn. Số trung bình có thể che lỗi
+trên tập tài liệu dày chữ mà hệ thống cần ưu tiên.
 
 % TV1: Quantitative analysis for UniversalRAG
 \subsubsection{Kết quả định lượng của UniversalRAG trên các tập ID và OOD}
@@ -283,14 +688,197 @@ CoRe-MMRAG & \dots & \dots & \dots \\
 \section{Kiểm chứng lập luận tác giả và đánh giá phản biện của nhóm}
 \label{sec:exp_critique}
 
-\draftnote[TV1 + TV2 + TV3]{Trả lời trực tiếp câu hỏi: ``Kết quả thực nghiệm có hỗ trợ những ưu điểm mà tác giả đưa ra không?'' và chỉ ra điểm yếu/đánh đổi ẩn ở từng bài:
-(1) \textbf{ColPali}: Sụt mạnh ở 224$\times$224 (-24.8 điểm); Token Pooling giảm chất lượng trên trang chữ dày (\textit{Shift}); chưa đánh giá tạo sinh đầu--cuối; kiểm tra lại PDF gốc hai điểm lệch giữa văn bản Mục 6 và Bảng 7 (số patch ở 224$\times$224 và chiều biến thiên của \textit{No Q.A. Tokens} trên tiếng Pháp).
-(2) \textbf{VisRAG}: Hiệu năng tạo sinh giảm khi tăng từ top-3 xuống top-10 do nhiễu đa trang; thiếu chứng minh lý thuyết về giới hạn 1 vector đơn.
-(3) \textbf{UniversalRAG}: Giả định toán học còn lý tưởng; độ chính xác định tuyến OOD giảm so với ID.
-(4) \textbf{CoRe-MMRAG}: Đánh đổi độ trễ suy luận 4 bước và bị giới hạn bởi năng lực đọc ảnh của MLLM nền.}
+\draftnote[TV3]{Trả lời trực tiếp câu hỏi: ``Kết quả thực nghiệm có hỗ trợ những ưu điểm mà tác giả đưa ra không?'' đối với \textbf{CoRe-MMRAG}: đánh đổi độ trễ suy luận 4 bước và giới hạn bởi năng lực đọc ảnh của MLLM nền.}
+
+Kết quả ViDoRe cho thấy ColPali tăng từ 58,8 điểm nDCG@5 của BiPali
+lên 81,3 điểm trong bảng đối chứng của bài gốc. Kết quả này hỗ trợ
+việc giữ tương tác ở mức token trong thiết lập ViDoRe. Mức tăng thuộc
+về chất lượng xếp hạng trang. Độ chính xác câu trả lời cần được đánh giá
+riêng ở tầng tạo sinh \cite{faysse2025colpali,yu2025visrag}.
+
+\paragraph{Độ mạnh của kết luận và cách kiểm tra tiếp.}
+Ba quan sát liên quan đến giả thuyết ở slide 16. Thứ nhất,
+nDCG@5 trên ViDoRe cải thiện rõ khi áp dụng ColPali, đặc
+biệt ở các tác vụ hình khoa học và infographic. Thứ hai,
+các lỗi Club Jetty và LinkedIn cho thấy hai đường lan
+truyền của lỗi tiền xử lý. Thứ ba, trong Sankey, chênh
+lệch tỷ lệ tạo đúng khi đã truy xuất đúng lớn hơn chênh
+lệch tìm đúng trang. Các quan sát này bổ sung cho nhau.
+Chúng cho phép nói rằng biểu diễn ảnh giải quyết được
+những trường hợp mất bố cục trong các thí nghiệm đã nêu.
+Hiệu quả còn tùy loại truy vấn, backbone, dữ liệu huấn
+luyện và giới hạn tài nguyên \cite{faysse2025colpali,yu2025visrag}.
+
+Đối với ColPali, nên đọc cả phân bố kết quả theo trang
+dày chữ và theo yếu tố thị giác khi thử nén. Nếu giảm số
+vector, đánh giá cần kiểm tra trang chứng cứ có tụt khỏi
+top-$k$ hay không và vùng nào bị giảm điểm. Đối với VisRAG,
+khi chọn số ảnh đưa vào mô hình, cần ghi rõ số token thị
+giác và tách câu chỉ cần một trang khỏi câu cần nhiều trang.
+Một phép kiểm tra thích hợp là cố định bộ truy xuất, lần
+lượt thêm trang nhiễu và đo tỷ lệ chọn đúng chứng cứ của
+cùng bộ sinh. Phép đo này cho thấy bộ sinh nhạy đến đâu
+với nhiễu mà hệ thống truy xuất đưa vào.
+
+Bài báo gốc cung cấp kết quả trên benchmark và phần cứng
+được mô tả trong từng thí nghiệm. Để kiểm tra lại trên tập
+PDF của nhóm, cần dùng cùng tập truy vấn, cùng ảnh kết
+xuất và cùng danh sách trang được gán nhãn cho cả hai hệ
+thống. Chênh lệch điểm nên đi cùng độ phân tán theo truy
+vấn. Nếu yêu cầu chứng cứ từ nhiều trang, nên ghi thêm tỷ
+lệ tìm được toàn bộ các trang cần thiết. Các giá trị
+trong chương này là số liệu do bài gốc báo cáo hoặc phép
+tính lại từ số liệu đó.
+
+\subsection{Đề xuất kiểm chứng theo kiểu chứng cứ trực quan}
+\label{subsec:tv2_protocol}
+
+Kết quả ở slide 14 cho thấy hai mô hình có lợi thế trên các tập
+khác nhau. Một phép kiểm chứng phù hợp cho báo cáo này là dùng
+cùng tập PDF và chia truy vấn theo thông tin cần đọc. Chẳng hạn,
+với tài liệu của doanh nghiệp, có thể phân biệt truy vấn tìm tên
+hoặc mã, truy vấn đọc một ô bảng, truy vấn diễn giải biểu đồ và
+truy vấn phải tổng hợp nhiều trang. Gán nhãn trước khi chạy để
+kiểu truy vấn không bị ảnh hưởng bởi mô hình nào trả lời đúng.
+Đối với câu cần nhiều trang, xác định cả trang cung cấp dữ liệu
+lẫn trang giải thích đơn vị, thời điểm hoặc phạm vi áp dụng.
+
+\paragraph{Chuẩn hóa đối chứng.}
+Với mỗi truy vấn, giữ nguyên kho và tập kiểm thử. Lưu phiên bản
+PDF cùng quy tắc kết xuất trang để thay đổi của tài liệu không
+làm lệch kết quả. TextRAG nhận văn bản từ công đoạn OCR đã xác
+định, ColPali và VisRAG-Ret nhận cùng ảnh trang. Nếu một mô hình
+cần thay đổi độ phân giải khi mã hóa, ghi lại bước đó và chọn
+một đối chứng bổ sung ở độ phân giải cố định. Nếu dùng checkpoint
+công bố, ghi nguồn và phiên bản. Nếu huấn luyện lại, cần tách
+theo PDF hoặc nhóm phiên bản trước khi chia tập để hạn chế một
+bảng giống hệt xuất hiện ở cả huấn luyện và kiểm thử.
+
+Đánh giá tìm trang trước khi gọi bộ sinh. Có thể lưu thứ hạng của
+các trang đúng, điểm số từ retriever và mã trang. Khi so sánh
+hai bộ truy xuất ở một mức $k$, cần ghi số câu mà chỉ ColPali
+tìm được chứng cứ, chỉ VisRAG-Ret tìm được, cả hai tìm được và
+cả hai bỏ sót. Vì hai hệ thống nhận cùng truy vấn, nhóm chênh
+lệch theo cặp này hữu ích hơn việc nhìn hai trung bình độc lập.
+Nếu quy mô đủ, lấy mẫu lại theo truy vấn hoặc theo tài liệu để
+ước lượng khoảng biến thiên của chênh lệch. Khi nhiều câu dùng
+chung tài liệu, lấy mẫu theo tài liệu giúp giữ các câu liên quan
+trong cùng một nhóm.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption[Đối chứng theo loại chứng cứ trong tài liệu]{Đề xuất phép thử theo loại chứng cứ. Các hàng mô tả tiêu chí đánh giá, chưa phải số liệu thực nghiệm.}
+\label{tab:tv2_protocol_types}
+\renewcommand{\arraystretch}{1.18}
+\begin{tabularx}{\textwidth}{@{}P{3.0cm}L L@{}}
+\toprule
+\rowcolor{tblhead}
+\thead{Kiểu truy vấn} & \thead{Chứng cứ cần gán nhãn} & \thead{Kiểm tra sau truy xuất} \\
+\midrule
+Tên riêng hoặc mã & Trang có đúng thực thể, vùng chứa tên hoặc mã & Cảnh báo nhầm trang cùng chủ đề hoặc tên gần giống \\
+\rowcolor{zebrabg}
+Ô trong bảng & Số trang, hàng, cột và đơn vị & Giá trị phải đi cùng đúng hàng, cột và đơn vị \\
+Biểu đồ & Trục, chú giải và điểm hoặc cột liên quan & Kiểm tra giá trị, xu hướng và phạm vi thời gian \\
+\rowcolor{zebrabg}
+Nhiều trang & Tập mọi trang cần để dựng đáp án & Kiểm tra đủ chứng cứ và cách nối thông tin \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Thí nghiệm cố định bộ sinh.}
+Để đánh giá ảnh hưởng của truy xuất tới câu trả lời, có thể dùng
+chung một bộ sinh và cùng câu lệnh khi thay ColPali bằng VisRAG-Ret.
+Mỗi kết quả xếp hạng được chuyển thành các ảnh trang theo cùng
+quy tắc. Nếu hai phương án đều tìm đúng trang mà câu trả lời khác
+nhau, kiểm tra thêm thứ tự, số ảnh và các trang nhiễu. Một lượt
+dùng trang gán nhãn làm ngữ cảnh Oracle giúp đo giới hạn của bộ
+sinh khi đã có chứng cứ. Với truy vấn một trang, có thể bổ sung
+đối chứng cấp văn bản OCR và cấp ảnh của chính trang đó để tách
+tác động của định dạng ngữ cảnh. Đây là cách mở rộng bài học từ
+Sankey và các ví dụ ở VisRAG \cite{yu2025visrag}.
+
+Để thấy nguyên nhân sai, có thể phân kết quả theo trang và câu
+trả lời. Nếu trang đúng vắng mặt, kiểm tra bước tìm kiếm. Nếu
+trang đúng có mặt nhưng mô hình viện dẫn sai vùng, kiểm tra
+khả năng đọc ảnh và ảnh hưởng của nhiễu. Nếu mô hình dẫn đúng
+vùng mà trả giá trị sai, kiểm tra cách chuẩn hóa đơn vị, phép
+tính hoặc cách sinh đáp án. Nếu câu trả lời đúng nhưng hệ
+thống không chỉ được trang hỗ trợ, ghi riêng để không đánh
+đồng độ chính xác với khả năng kiểm chứng.
+
+\paragraph{Thí nghiệm cố định ngân sách.}
+So sánh quy mô chỉ mục cần giữ rõ ngân sách bộ nhớ và thời gian.
+Một đợt thử có thể đối chiếu ColPali chưa nén, ColPali với
+token pooling và chỉ mục đơn vector. Trước khi đo, ghi số lượng
+trang, kích thước vector, số bit cho mỗi giá trị và dung lượng
+chỉ mục trên đĩa. Độ trễ ổn định cần được tách khỏi lần đầu
+nạp mô hình và khởi tạo chỉ mục. Dùng cùng tập truy vấn và
+báo cáo song song trung vị, phân vị 95, Recall và nDCG. Từ đó
+có thể xem một cấu hình vừa ngân sách có giữ được nhóm chứng
+cứ cần thiết hay không.
+
+\paragraph{Phân tích ngân sách bằng kích thước đầu vào.}
+Giả sử thử nghiệm trên một kho có 100\,000 trang. Ở cấu hình
+hai byte cho mỗi thành phần, phần embedding chưa nén của
+ColPali cần 26,368\,GB, còn vector đơn của VisRAG-Ret cần
+0,4608\,GB nếu tính GB theo cơ số 10. Các giá trị này được
+tính từ kích thước vector ở Mục~\ref{subsec:colpali_vs_visrag}.
+Chúng chưa bao gồm ảnh, đồ thị tìm kiếm, chỉ mục đảo hoặc
+bộ nhớ của mô hình. Có thể dùng chúng để đặt một mốc dự
+toán trước khi đo dung lượng thật. Kết quả đo phải ghi
+rõ dữ liệu nằm trên đĩa, RAM hay bộ nhớ GPU vì ba giới hạn
+này dẫn đến các cấu hình triển khai khác nhau.
+
+Một phương án thử là đưa ảnh trang qua VisRAG-Ret để chọn
+top-$m$, rồi dùng ColPali chấm lại và trả top-$k$ với $k\le m$.
+Với truy vấn có 16 vector và mỗi trang 1030 vector, chấm trực
+tiếp 100\,000 trang cần khoảng 1,648 tỷ tích vô hướng. Nếu
+tầng đầu chỉ chuyển 100 trang, tầng MaxSim còn 1,648 triệu
+tích vô hướng. Chênh lệch này chỉ đếm phép tính tại MaxSim.
+Thời gian truy vấn còn gồm mã hóa câu hỏi, tìm bằng vector
+đơn, truy cập các vector của ứng viên và gọi bộ sinh. Khi
+dùng bảng đối chứng nén, có thể thay 1030 bằng số vector
+thực sự được lưu để ước tính lượng phép tính thay đổi thế
+nào khi đạt cùng giới hạn bộ nhớ.
+
+Nếu một trang chứng cứ có hạng 150 ở tầng vector đơn, chọn
+$m=100$ khiến trang đó vắng mặt trước khi MaxSim chạy. Với
+hai trang chứng cứ có hạng 20 và 150, cấu hình này vẫn có thể
+đạt MRR tốt nhờ trang hạng 20, trong khi câu trả lời thiếu
+chứng cứ từ trang còn lại. Khi tăng $m$ lên 200, cả hai trang
+có thể tham gia xếp hạng lại. Cần đo tiếp liệu top-$k$ cuối
+có giữ được cả hai hay không. Chuỗi điều kiện này cho thấy
+vì sao nên ghi Recall ở tầng ứng viên và độ bao phủ chứng
+cứ ở tầng đưa ảnh vào bộ sinh.
+
+\paragraph{Diễn giải theo loại câu hỏi.}
+Trở lại ví dụ doanh thu theo quý, nhãn đánh giá có thể gồm
+hai giá trị, hai quý tương ứng, đơn vị và số trang nguồn.
+Trong điều kiện có đủ thông tin, đáp án minh họa là 25\%.
+Nếu câu trả lời nêu 25\% nhưng dùng nhầm giá trị của một
+công ty khác, điểm đúng theo chuỗi không thể hiện sai lệch
+về chứng cứ. Nếu hệ thống đọc đúng cả hai giá trị nhưng
+dùng chênh lệch 20 tỷ làm tỷ lệ 20\%, có thể phân loại dưới
+lỗi phép tính. Nếu nó đọc đúng giá trị nhưng nhầm Quý 3 và
+Quý 4, lỗi nằm ở liên kết nhãn hoặc thứ tự so sánh. Cùng
+một điểm accuracy có thể che những nguyên nhân sai này.
+
+Trên một tập câu hỏi, nên dùng cùng tiêu chí chấm cho các
+cấu hình. Với câu số, ghi trước mẫu số và phép chuẩn hóa
+đơn vị. Với câu tìm trang chứng cứ, đối chiếu mã tài liệu
+lẫn số trang vì hai tài liệu có thể có số trang trùng nhau.
+Với câu nhiều trang, có thể báo cáo tỷ lệ đủ chứng cứ và độ
+chính xác điều kiện trên các câu đã đủ chứng cứ. Cách tách
+này tiếp nối cách đọc sơ đồ dòng của VisRAG ở
+Hình~\ref{fig:tv2_visrag_sankey} và giúp nhóm xác định khâu
+nào cần ưu tiên nếu sau này chạy lại thử nghiệm trên tài
+liệu của mình.
 
 % TV1: Critical verification of UniversalRAG's claims and limitations
-\paragraph{Kiểm chứng lập luận và đánh giá phản biện đối với UniversalRAG.}
+\subsection{Kiểm chứng lập luận và đánh giá phản biện đối với UniversalRAG}
+\label{subsec:tv1_universalrag_critique}
+
 Khi đối chiếu các tuyên bố của tác giả trong \cite{yeo2026universalrag} với số liệu ở Mục~\ref{subsec:quantitative_tables}, có thể thấy thực nghiệm đã chứng minh được ba kết luận chính: (i) tách riêng kho theo từng phương thức giúp tránh được hiện tượng thiên lệch về văn bản của không gian biểu diễn chung (\textit{Modality Acc} tăng từ 25,00\%--36,27\% lên 95,28\%, \textit{Recall}@5 tăng gấp đôi lên 44,82\% ở Bảng~3 và tỷ lệ chọn phương thức cân bằng trên Hình~4); (ii) cả hai cơ chế truy xuất liên phương thức và phân tách mức độ chi tiết đều mang lại cải thiện trên nhiều bộ dữ liệu và cả ba mô hình sinh LVLM (Bảng~2, 4, 8 và 9); và (iii) lợi thế về tốc độ tìm kiếm thể hiện rõ khi tổng quy mô kho vượt qua mốc 10M mục (Hình~5). Dù vậy, khi xét kỹ điều kiện thí nghiệm, phương pháp này vẫn còn bốn hạn chế và đánh đổi cần lưu ý:
 
 \begin{enumerate}
