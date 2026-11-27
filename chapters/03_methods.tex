@@ -6,7 +6,7 @@
 \chapter{Phân tích cơ chế và so sánh các phương pháp tiêu biểu}
 \label{chap:methods}
 
-\draftnote[Chung]{Viết 1 đoạn dẫn nhập ngắn (5--7 dòng) giới thiệu cách tổ chức Chương 3 theo 3 tầng bài toán (Pre-Retrieval $\rightarrow$ In-Corpus Visual Doc RAG $\rightarrow$ Post-Retrieval Reconciliation) thay vì tóm tắt rời rạc từng bài báo, sau đó ghép 4 mục con bên dưới.}
+Chương này phân tích bốn công trình kỹ thuật trọng tâm theo trình tự xử lý một truy vấn trong hệ thống Multimodal RAG thay vì trình bày tách rời từng bài báo. Cụ thể, Mục~\ref{sec:method_universalrag} khảo sát tầng trước truy xuất (\textit{Pre-Retrieval}) với cơ chế định tuyến chọn phương thức và mức độ chi tiết của \textit{UniversalRAG}~\cite{yeo2026universalrag}. Tiếp theo, Mục~\ref{sec:method_vision_doc} đặt \textit{ColPali}~\cite{faysse2025colpali} và \textit{VisRAG}~\cite{yu2025visrag} trong thế đối sánh trực tiếp cho bài toán truy xuất và đọc hiểu tài liệu dưới dạng ảnh trang. Sau khi thu được tập ngữ cảnh, Mục~\ref{sec:method_coremmrag} trình bày quy trình bốn bước kiểm chứng và xử lý mâu thuẫn tri thức của \textit{CoRe-MMRAG}~\cite{tian2025coremmrag} ở tầng sau truy xuất (\textit{Post-Retrieval}). Cuối cùng, Mục~\ref{sec:method_integration} tổng hợp độ phức tạp tính toán và thảo luận khả năng ghép nối các phương pháp trên thành một quy trình hoàn chỉnh.
 
 % Subsections split across team members for parallel drafting
 \input{chapters/03_1_universalrag}

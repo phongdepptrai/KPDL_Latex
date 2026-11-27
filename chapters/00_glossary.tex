@@ -1,26 +1,51 @@
 % ==============================================================================
-% Front matter: Abbreviations and Terminology Glossary Template (VNU-UET style)
+% Front matter: Standardized English-Vietnamese Glossary (VNU-UET style)
+% Owner: Member 1 (TV1 - Coordinator)
 % ==============================================================================
 
 \chapter*{Danh mục từ viết tắt và thuật ngữ chuyên ngành}
 \phantomsection
 \addcontentsline{toc}{chapter}{Danh mục từ viết tắt và thuật ngữ chuyên ngành}
 
-\draftnote[TV1 + Chung]{Cả 3 thành viên thống nhất bảng thuật ngữ ngay từ đầu trước khi viết (gợi ý đưa vào: LLM, MLLM/LVLM, RAG, MMRAG, OCR, Modality Gap, Granularity, Late Interaction/MaxSim, Token Pooling, In-batch Negatives, Parametric Knowledge, PRKI, VTKI, OOD, MRR, nDCG, BEM) để tránh dịch sai hoặc dịch không đồng nhất giữa các chương.}
+Bảng dưới đây quy định các từ viết tắt và cách diễn đạt thuật ngữ thống nhất giữa các chương nhằm bảo đảm tính chính xác chuyên môn và tránh sai lệch ngữ nghĩa khi chuyển ngữ từ tài liệu gốc tiếng Anh.
 
-\begin{table}[H]
-\centering
-\small
-\renewcommand{\arraystretch}{1.22}
-\begin{tabularx}{\textwidth}{@{}P{3.3cm}P{4.5cm}L@{}}
+{\footnotesize
+\setlength{\extrarowheight}{1.2pt}
+\renewcommand{\arraystretch}{1.05}
+\begin{longtable}{@{}P{3.3cm}P{4.6cm}P{\dimexpr\textwidth-7.9cm-4\tabcolsep\relax}@{}}
 \toprule
 \rowcolor{tblhead}
-\thead{Thuật ngữ / Viết tắt} & \thead{Tên tiếng Anh đầy đủ} & \thead{Giải thích / Quy ước tiếng Việt} \\
+\thead{Thuật ngữ / Viết tắt} & \thead{Tên tiếng Anh đầy đủ} & \thead{Quy ước tiếng Việt \& Giải thích} \\
 \midrule
-LLM & Large Language Model & [Điền quy ước tiếng Việt] \\
-\rowcolor{zebrabg}
-RAG & Retrieval-Augmented Generation & [Điền quy ước tiếng Việt] \\
-\dots & \dots & \dots \\
+\endfirsthead
+\toprule
+\rowcolor{tblhead}
+\thead{Thuật ngữ / Viết tắt} & \thead{Tên tiếng Anh đầy đủ} & \thead{Quy ước tiếng Việt \& Giải thích} \\
+\midrule
+\endhead
 \bottomrule
-\end{tabularx}
-\end{table}
+\endfoot
+\textbf{LLM} & Large Language Model & Mô hình ngôn ngữ lớn \\
+\rowcolor{zebrabg}
+\textbf{MLLM / LVLM} & Multimodal / Large Vision-Language Model & Mô hình ngôn ngữ đa phương thức / Mô hình ngôn ngữ thị giác lớn \\
+\textbf{RAG} & Retrieval-Augmented Generation & Tạo sinh tăng cường truy xuất \\
+\rowcolor{zebrabg}
+\textbf{MMRAG} & Multimodal RAG & Hệ thống RAG đa phương thức \\
+\textbf{OCR} & Optical Character Recognition & Nhận dạng ký tự quang học \\
+\rowcolor{zebrabg}
+\textbf{Modality Gap} & Modality Gap & Hiện tượng các vector tự tách cụm theo phương thức dữ liệu trong không gian biểu diễn chung \\
+\textbf{Granularity} & Retrieval Granularity & Mức độ chi tiết của đơn vị lưu trữ và truy xuất (đoạn ngắn, tài liệu dài, clip ngắn, video đầy đủ) \\
+\rowcolor{zebrabg}
+\textbf{Late Interaction} & Late Interaction (MaxSim) & Cơ chế tương tác muộn tính tổng độ tương đồng lớn nhất giữa từng token truy vấn và các patch ảnh \\
+\textbf{Token Pooling} & Hierarchical Token Pooling & Gom cụm phân cấp các vector patch tương tự nhau để giảm dung lượng chỉ mục \\
+\rowcolor{zebrabg}
+\textbf{Parametric Knowledge} & Parametric Knowledge & Tri thức nội tại được lưu trong bộ trọng số của mô hình sau huấn luyện \\
+\textbf{PRKI} & Parametric-Retrieved Knowledge Inconsistency & Mâu thuẫn giữa tri thức nội tại của mô hình và ngữ cảnh truy xuất từ bên ngoài \\
+\rowcolor{zebrabg}
+\textbf{VTKI} & Visual-Textual Knowledge Inconsistency & Mâu thuẫn hoặc lệch thông tin giữa hình ảnh và văn bản truy xuất được \\
+\textbf{ID / OOD} & In-Domain / Out-of-Domain & Tập dữ liệu cùng phân phối / khác phân phối với dữ liệu huấn luyện \\
+\rowcolor{zebrabg}
+\textbf{MRR / nDCG} & Mean Reciprocal Rank / Normalized Discounted Cumulative Gain & Các độ đo đánh giá chất lượng xếp hạng của bộ truy xuất \\
+\textbf{EM / ROUGE-L / BERTScore} & Exact Match / ROUGE-L / BERTScore & Các độ đo đánh giá câu trả lời theo khớp chính xác, chuỗi con chung dài nhất và tương đồng ngữ nghĩa \\
+\end{longtable}
+}

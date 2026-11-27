@@ -1,29 +1,114 @@
 % ==============================================================================
-% Section 3.1: Pre-Retrieval Routing - UniversalRAG (Clean Skeleton)
-% Owner: Member 1 (TV1) | Target length: ~3.5-4 pages
+% Section 3.1: Pre-Retrieval Routing - UniversalRAG
+% Owner: Member 1 (TV1) | Target length: ~4-5 pages
+% Grounded strictly in Yeo et al. (arXiv:2504.20734v5 / ACL 2026 Oral)
 % ==============================================================================
 
-\section{Tầng Pre-Retrieval: Định tuyến nhận thức phương thức và độ phân giải -- UniversalRAG}
+\section{Tầng Pre-Retrieval: Định tuyến theo phương thức và mức độ chi tiết -- UniversalRAG}
 \label{sec:method_universalrag}
 
-\draftnote[TV1]{Mục 3.1 dài khoảng 3.5--4 trang, phân tích sâu công trình \textit{UniversalRAG} (\texttt{\textbackslash cite\{yeo2026universalrag\}}). Cần giải thích rõ vì sao tách kho độc lập kết hợp Router lại giải quyết được bài toán đặt ra, kèm sơ đồ luồng xử lý.}
+Khi hệ thống Multimodal RAG quản lý nhiều nguồn dữ liệu khác nhau (đoạn văn ngắn, tài liệu dài, bảng biểu, hình ảnh, đoạn clip ngắn và video đầy đủ), bước đầu tiên trước khi tìm kiếm là xác định xem câu hỏi hiện tại có cần tra cứu ngoài hay không, cần tìm ở phương thức nào và với đơn vị dữ liệu lớn hay nhỏ. Công trình \textit{UniversalRAG} của Yeo và cộng sự~\cite{yeo2026universalrag} giải quyết bài toán trước truy xuất (\textit{Pre-Retrieval}) này bằng cách đặt một bộ định tuyến ở đầu quy trình để hướng từng truy vấn về đúng các kho dữ liệu chuyên biệt.
 
+% ------------------------------------------------------------------------------
 \subsection{Phân tích gốc rễ vấn đề: Modality Gap và Fixed Granularity}
 \label{subsec:ur_problem}
 
-\draftnote[TV1]{Giải thích hiện tượng Modality Gap (minh họa trực giác t-SNE Hình 2, 4, 7 bài gốc) và nhược điểm của độ phân giải cố định (cắt nhỏ mất ngữ cảnh vs. nguyên khối nhiều nhiễu). Tóm lược ý nghĩa toán học của Mệnh đề 2.1, C.1 và C.4 trong bài báo.}
+\paragraph{Khoảng cách phương thức trong không gian biểu diễn chung.}
+Cách làm đơn giản nhất để tìm kiếm trên nhiều loại dữ liệu là gộp toàn bộ các kho thành một tập duy nhất $\mathcal{C}_{\mathrm{unified}} = \bigcup_{m \in M} \mathcal{C}_m$, rồi dùng một bộ mã hóa đa phương thức (như UniRAG, GME, $\mathrm{PE}_{\mathrm{core}}$ hoặc VLM2Vec-V2) đưa mọi phần tử vào chung một không gian vector và truy xuất theo công thức $c = \mathcal{T}(q; \mathcal{C}_{\mathrm{unified}})$. Tuy nhiên, kết quả chiếu giảm chiều bằng t-SNE và PCA trong bài gốc (Hình~\ref{fig:tv1_ur_tsne} và Hình~7 của~\cite{yeo2026universalrag}) cho thấy hiện tượng \textit{modality gap}~\cite{liang2022mind} vẫn xuất hiện rõ trên cả sáu bộ mã hóa đa phương thức được khảo sát. Thay vì phân bố thuần túy theo nội dung ngữ nghĩa, các vector tự tách thành những cụm riêng theo từng phương thức (\textit{Text}, \textit{Image}, \textit{Video}). Vì đa số câu hỏi của người dùng ở dạng văn bản, vector truy vấn thường nằm gần cụm văn bản hơn, dẫn tới việc bộ tìm kiếm ưu tiên trả về văn bản ngay cả khi thông tin cần thiết nằm trong ảnh hoặc video.
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.68\textwidth]{figures/tv1/universalrag-tsne.png}
+\caption[Phân cụm theo phương thức trong không gian biểu diễn chung (t-SNE)]{Biểu đồ t-SNE minh họa hiện tượng \textit{Modality Gap} trong không gian biểu diễn chung: các truy vấn (màu vàng) tập trung gần cụm văn bản và tách xa cụm hình ảnh, video. Nguồn: Hình~2 của~\cite{yeo2026universalrag}.}
+\label{fig:tv1_ur_tsne}
+\end{figure}
+
+Để mô tả định lượng hiện tượng này, Yeo và cộng sự~\cite{yeo2026universalrag} (Mệnh đề~2.1 và Mệnh đề~C.1) biểu diễn điểm tương đồng trong kho gộp $\mathcal{C}_{\mathrm{unified}}$ dưới dạng:
+\begin{equation}
+    s(q, c) = \alpha \cdot \mathbf{1}\{m(q) = m(c)\} + \beta \cdot r(q, c) + \varepsilon
+    \label{eq:ur_unified_score}
+\end{equation}
+trong đó $m(\cdot)$ ký hiệu phương thức của truy vấn hoặc tài liệu, $\alpha > 0$ là độ lệch ưu tiên cùng phương thức (\textit{modality bias}), $r(q, c)$ đo mức độ liên quan về nội dung và $\varepsilon$ là nhiễu ngẫu nhiên. Chia kho gộp thành ba tập rời nhau: $S = \{c : m(c) = m(q)\}$ (cùng phương thức với câu hỏi), $R = \{c : m(c) = m^*(q)\}$ (phương thức mục tiêu cần tìm, xét trường hợp $m^*(q) \neq m(q)$) và $O = \mathcal{C}_{\mathrm{unified}} \setminus (S \cup R)$. Đặt $X_c = \beta \cdot r(q, c) + \varepsilon_c$, giả sử các biến $X_c$ độc lập, có kỳ vọng bằng $0$ và tuân theo phân phối \textit{sub-Gaussian} với tham số phương sai $\sigma^2 = \beta^2 \mathrm{Var}[r(q, c)] + \mathrm{Var}[\varepsilon_c]$.
+
+Phần tử đứng đầu kết quả tìm kiếm (top-1) thuộc tập $R$ khi và chỉ khi $\max_{r \in R} X_r \ge \alpha + \max\{\max_{s \in S} X_s, \max_{o \in O} X_o\}$. Áp dụng bất đẳng thức hợp (\textit{union bound}) và chặn Chernoff cho hiệu $X_r - X_s$ (có tham số phương sai $2\sigma^2$), xác suất lấy đúng phương thức khi tìm trên kho gộp bị chặn trên bởi~\cite{yeo2026universalrag}:
+\begin{equation}
+    \mathbb{P}\!\left(\mathcal{T}_{\mathrm{unified}}(q; \mathcal{C}_{\mathrm{unified}}) \in R\right) \le |R||S| \exp\!\left(-\frac{\alpha^2}{4\sigma^2}\right)
+    \label{eq:ur_chernoff}
+\end{equation}
+Trong khi đó, nếu dùng một bộ định tuyến chọn đúng phương thức mục tiêu với xác suất $p$ rồi mới tìm kiếm riêng bên trong kho $\mathcal{C}_{\mathcal{R}(q)}$, xác suất phần tử top-1 thuộc đúng tập $R$ sẽ bằng $p$. Vì vế phải của~\eqref{eq:ur_chernoff} giảm theo hàm mũ khi tỷ số $\alpha/\sigma$ tăng, phương án định tuyến trước rồi mới truy xuất cho xác suất chọn đúng phương thức cao hơn hẳn kho gộp khi thỏa mãn điều kiện:
+\begin{equation}
+    \alpha > 2\sigma \sqrt{\ln\!\left(\frac{|R||S|}{p}\right)}
+    \label{eq:ur_alpha_bound}
+\end{equation}
+Theo ví dụ số ở Nhận xét~C.2 của bài báo~\cite{yeo2026universalrag}, ngay cả với kho dữ liệu rất lớn $|R| = |S| = 10^{12}$, nếu $p = 0{,}8$ và $\sigma = 0{,}01$ thì chỉ cần độ lệch cùng phương thức $\alpha > 0{,}17$ đã đủ làm cho truy xuất trên kho gộp có xác suất tìm đúng phương thức thấp hơn phương án có định tuyến.
+
+\paragraph{Hạn chế của việc cố định mức độ chi tiết (\textit{Fixed Granularity}).}
+Ngay cả khi đã tìm đúng loại phương thức, dùng chung một kích thước đơn vị dữ liệu cho mọi câu hỏi vẫn làm giảm chất lượng câu trả lời. Với dữ liệu văn bản, các câu hỏi tra cứu thông tin đơn lẻ (như trong Natural Questions) chỉ cần một đoạn văn ngắn dưới 100 từ (\textit{Paragraph}). Ngược lại, câu hỏi suy luận qua nhiều thực thể liên kết nhau (như trong HotpotQA) đòi hỏi ngữ cảnh rộng cấp tài liệu (\textit{Document}) để không bị thiếu mắt xích trung gian~\cite{yeo2026universalrag}. Vấn đề tương tự cũng xảy ra trên dữ liệu video: câu hỏi hỏi về một chi tiết thoáng qua trong video dài hơn một giờ (LVBench) cần truy xuất đúng đoạn clip ngắn chứa khoảnh khắc đó; nếu lấy mẫu khung hình rải đều trên toàn bộ video dài, chi tiết cần tìm rất dễ bị bỏ sót. Mệnh đề~C.3 của~\cite{yeo2026universalrag} chứng minh rằng chỉ cần tồn tại câu hỏi $q_1$ cho chất lượng cao hơn ở mức chi tiết mịn $g_f$ ($F(q_1; m, g_f) > F(q_1; m, g_c)$) và câu hỏi $q_2$ cho chất lượng cao hơn ở mức thô $g_c$ ($F(q_2; m, g_c) > F(q_2; m, g_f)$), mọi cách cố định một mức chi tiết duy nhất đều có tổng chất lượng kỳ vọng thấp hơn cách chọn mức chi tiết linh hoạt theo từng câu hỏi.
+
+% ------------------------------------------------------------------------------
 \subsection{Kiến trúc hệ thống và cơ chế hoạt động}
 \label{subsec:ur_architecture}
 
-\draftnote[TV1]{Trình bày luồng 3 tầng: Multi-hot Router phân loại vào tập con của \{\texttt{None, Paragraph, Document, Table, Image, Clip, Video}\} $\rightarrow$ 6 kho dữ liệu độc lập (Independent Corpora) theo 2 trục Modality $\times$ Granularity $\rightarrow$ bộ truy xuất chuyên biệt (\texttt{Qwen3-Embedding-4B}, \texttt{VLM2Vec-V2}) và LVLM tạo sinh. Chèn sơ đồ pipeline và ví dụ minh họa cụ thể (Clip vs Video vs Paragraph+Image).}
+Thay vì gộp chung mọi dữ liệu vào một chỉ mục duy nhất hoặc tìm trên tất cả các kho rồi mới lọc lại (như MultiRAG), UniversalRAG chia quy trình thành ba khâu nối tiếp nhau như minh họa trên Hình~\ref{fig:tv1_ur_concept}:
 
-\subsection{Thiết kế huấn luyện, suy luận và cơ chế Ensemble}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figures/tv1/universalrag-concept.png}
+\caption[So sánh kiến trúc UniversalRAG với ba chiến lược RAG trước đó]{So sánh ba hướng RAG cố định trước đây (A: cố định một phương thức, B: cố định một mức độ chi tiết, C: gộp chung một kho bị ảnh hưởng bởi \textit{Modality Gap}) với kiến trúc định tuyến đa kho của UniversalRAG (D). Nguồn: Hình~1 của~\cite{yeo2026universalrag}.}
+\label{fig:tv1_ur_concept}
+\end{figure}
+
+\begin{enumerate}
+    \item \textbf{Bộ định tuyến đa nhãn (\textit{Multi-hot Router}):} Với mỗi truy vấn đầu vào $q \in \mathcal{Q}$, bộ định tuyến $\mathcal{R}$ quyết định hoặc không cần truy xuất ($\varnothing$), hoặc chọn ra một tập con các cặp $(\text{phương thức}, \text{mức độ chi tiết})$ theo công thức~(2.1) của~\cite{yeo2026universalrag}:
+    \begin{equation}
+        \mathcal{R}: \mathcal{Q} \longrightarrow \{\varnothing\} \cup \mathcal{P}\!\left(\bigcup_{m \in M} \{m\} \times G_m\right)
+        \label{eq:ur_router_map}
+    \end{equation}
+    Trong cấu hình chính của bài báo, bộ định tuyến phân loại trên 7 lựa chọn gồm: \texttt{None} (trả lời trực tiếp bằng kiến thức sẵn có của mô hình), \texttt{Paragraph}, \texttt{Document}, \texttt{Table}, \texttt{Image}, \texttt{Clip} và \texttt{Video}. Do miền giá trị là tập lũy thừa $\mathcal{P}(\cdot)$, một câu hỏi có thể kích hoạt cùng lúc nhiều kho khác nhau khi cần kết hợp thông tin liên phương thức, chẳng hạn chọn \texttt{Paragraph + Table} cho HybridQA hoặc \texttt{Paragraph + Image} cho WebQA và InfoSeek.
+
+    \item \textbf{Các kho dữ liệu tách biệt theo phương thức và mức độ chi tiết:} Mỗi cặp $(m, g)$ được lưu thành một chỉ mục độc lập và chỉ so khớp vector bên trong kho đó, nhờ vậy tránh được việc so sánh điểm tương đồng chéo giữa hai phương thức khác nhau. Trong thiết lập thực nghiệm~\cite{yeo2026universalrag}, văn bản Wikipedia được tách thành hai kho: kho đoạn ngắn tối đa 100 từ (\textit{Paragraph}) và kho tài liệu dài gom theo cách của LongRAG (\textit{Document}). Dữ liệu bảng lấy từ HybridQA và lập chỉ mục riêng. Kho ảnh giữ nguyên từng ảnh độc lập. Kho video gồm hai mức: kho video đầy đủ (\textit{Video}) và kho đoạn ngắn trung bình không quá 3 phút (\textit{Clip}) được tách tự động bằng công cụ phát hiện chuyển cảnh \texttt{PySceneDetect}.
+
+    \item \textbf{Bộ truy xuất chuyên biệt cho từng kho và mô hình sinh LVLM:} Vì các kho đã tách rời, mỗi kho có thể dùng bộ mã hóa phù hợp nhất với loại dữ liệu của mình. Cụ thể, bài báo dùng \texttt{Qwen3-Embedding-4B} cho văn bản, dùng vector biểu diễn đặc theo từng hàng (\textit{dense row-level embedding}) kết hợp bộ mã hóa văn bản cho bảng, và dùng \texttt{VLM2Vec-V2} cho ảnh cùng video. Khi tìm ảnh và video, điểm tương đồng cuối được tính bằng tổ hợp tuyến tính giữa độ tương đồng thị giác (trọng số $0{,}8$) và độ tương đồng văn bản trên chú thích ảnh hoặc lời thoại video (trọng số $0{,}2$), trong đó mỗi video được lấy mẫu đều 32 khung hình~\cite{yeo2026universalrag}. Các kết quả truy xuất từ những kho được chọn sau đó được gộp lại và đưa vào LVLM (Qwen3-VL-8B-Instruct, InternVL3.5-8B hoặc Molmo2-4B) để sinh câu trả lời.
+\end{enumerate}
+
+\paragraph{Minh họa qua các ví dụ định tính trong bài báo.}
+Các ví dụ cụ thể tại Bảng~6 và Bảng~11--14 của~\cite{yeo2026universalrag} cho thấy cách cơ chế định tuyến khắc phục từng nhóm lỗi:
+\begin{itemize}
+    \item \textit{Kết hợp liên phương thức (Bảng~6):} Với câu hỏi đếm tổng số tượng người trên đài tưởng niệm \textit{Michigan Soldiers and Sailors Monument} (đáp án đúng: 9), TextRAG chỉ lấy được đoạn văn nhắc tới 8 bức tượng, ImageRAG chỉ đếm được 6 bức do góc chụp che khuất phần mặt sau, còn VideoRAG trả lời sai là 4 vì kho video không có tư liệu liên quan. UniversalRAG chọn đồng thời hai nhánh \texttt{Paragraph + Image}, đối chiếu thông tin từ cả văn bản lẫn ảnh chụp để đưa ra đáp án đúng là 9.
+    \item \textit{Chọn mức độ chi tiết cho văn bản (Bảng~12):} Khi câu hỏi yêu cầu tìm điểm chung giữa hai cầu thủ bóng bầu dục Canada (\textit{George Reed} và cầu thủ từng học tại \textit{Drake University}), ParagraphRAG lấy nhầm đoạn ngắn viết về \textit{Matthew Reed} nên báo thiếu thông tin. UniversalRAG hướng câu hỏi vào kho \texttt{Document}, thu được tài liệu dài chứa thông tin của cả hai thực thể và trả lời đúng là \textit{Johnny Bright}.
+    \item \textit{Chọn mức độ chi tiết cho video (Bảng~13):} Với câu hỏi hỏi nhân vật chính nhìn thấy gì qua cửa sổ trong tập phim \textit{Blue Eye Samurai} dài hơn một giờ, VideoRAG lấy 32 khung hình rải đều trên toàn bộ khoảng \texttt{00:00--1:01:05} nên bỏ lỡ cảnh quan trọng và chọn nhầm đáp án A. UniversalRAG chọn nhánh \texttt{Clip}, khoanh vùng đúng đoạn \texttt{33:46--36:56} và chọn đúng đáp án C.
+\end{itemize}
+
+% ------------------------------------------------------------------------------
+\subsection{Thiết kế huấn luyện, suy luận và kết hợp bộ định tuyến}
 \label{subsec:ur_training}
 
-\draftnote[TV1]{So sánh 2 chế độ triển khai Router: (a) Trained Router (Qwen3-VL-2B, InternVL3.5-1B, T5Gemma 2 270M; fine-tune LoRA $r=32$, 5 epochs, lr $2\times 10^{-5}$, Binary Cross-Entropy loss, ngưỡng sigmoid $0.8$); (b) Training-free Router (few-shot prompting); và cơ chế Ensemble theo độ tin cậy giúp tăng hiệu năng OOD.}
+Một trở ngại thực tế khi xây dựng bộ định tuyến là các tập dữ liệu hỏi đáp hiện nay không có sẵn nhãn chuẩn chỉ định phương thức và mức độ chi tiết tối ưu cho từng câu hỏi. Để giải quyết vấn đề này, nhóm tác giả thiết kế hai loại bộ định tuyến khác nhau và đề xuất thêm phương án kết hợp cả hai~\cite{yeo2026universalrag}:
 
-\subsection{Ưu điểm, đánh đổi và giới hạn kỹ thuật}
+\begin{itemize}
+    \item \textbf{Bộ định tuyến có huấn luyện (\textit{Training-based Router}):} Nhóm tác giả dựa vào nguồn tri thức đích vốn có của 10 tập dữ liệu trong phân phối để gán nhãn tự động dạng đa nhãn (\textit{multi-hot}) trên 7 lựa chọn định tuyến, sau đó chia dữ liệu theo tỷ lệ 3:7 cho huấn luyện và kiểm thử (riêng các tập VideoRAG không có mốc thời gian thì dùng GPT-4o phân loại câu hỏi cần clip ngắn hay video đầy đủ). Một tầng phân loại tuyến tính được gắn thêm lên các mô hình cỡ nhỏ như Qwen3-VL-2B-Instruct, InternVL3.5-1B và T5Gemma~2 270M. Quá trình tinh chỉnh sử dụng LoRA hạng $r = 32$ trong 5 epoch với tốc độ học $2 \times 10^{-5}$ và hàm mất mát \textit{Binary Cross-Entropy}. Ở bước suy luận, mô hình tính xác suất sigmoid cho từng nhãn và kích hoạt tất cả các nhánh có xác suất vượt ngưỡng $0{,}8$~\cite{yeo2026universalrag}.
+
+    \item \textbf{Bộ định tuyến dựa trên prompt (\textit{Training-free Router}):} Thay vì tinh chỉnh tham số, phương án này dùng trực tiếp các mô hình cỡ lớn (GPT-5 hoặc Qwen3-VL-8B-Instruct) thông qua kỹ thuật \textit{few-shot prompting} (Hình~8 bài gốc). Nội dung prompt mô tả tiêu chí chọn của từng nhánh và đặt cạnh nhau các cặp câu hỏi dễ nhầm để mô hình phân biệt ranh giới (chẳng hạn \textit{``Describe the moment Messi scored...''} gán nhãn \texttt{Clip}, còn \textit{``Explain how Messi scored...''} gán nhãn \texttt{Video}). Cách làm này không cần tập dữ liệu huấn luyện và có thể mở rộng linh hoạt lên 4 mức độ chi tiết (\textit{Paragraph}, \textit{Passage}, \textit{Section}, \textit{Document} cho văn bản; \textit{Clip}, \textit{Sequence}, \textit{Segment}, \textit{Video} cho video; Hình~9 bài gốc) chỉ bằng cách sửa nội dung prompt~\cite{yeo2026universalrag}.
+
+    \item \textbf{Kết hợp nhiều bộ định tuyến (\textit{Ensemble Routing}):} Thực nghiệm cho thấy bộ định tuyến có huấn luyện đạt độ chính xác rất cao trên các tập cùng phân phối nhưng bị giảm mạnh khi sang tập dữ liệu mới; ngược lại, bộ định tuyến dùng prompt giữ được độ ổn định tốt trên miền mới nhưng kém chính xác hơn trên miền quen thuộc. Vì vậy, bài báo thử nghiệm hai cách kết hợp: (1) \textit{Confidence-based Ensemble}: dùng kết quả của bộ định tuyến có huấn luyện nếu xác suất dự đoán vượt ngưỡng tin cậy, nếu thấp hơn thì chuyển sang hỏi bộ định tuyến dùng prompt; và (2) \textit{Majority Voting}: lấy kết quả theo đa số phiếu giữa ba bộ định tuyến (gồm cả loại có huấn luyện và không huấn luyện), nếu hòa thì chọn ngẫu nhiên~\cite{yeo2026universalrag}.
+\end{itemize}
+
+% ------------------------------------------------------------------------------
+\subsection{Phân tích độ phức tạp, đánh đổi và các dạng lỗi thường gặp}
 \label{subsec:ur_tradeoffs}
 
-\draftnote[TV1]{Phân tích đánh đổi thiết kế: khử Modality Gap và giảm độ trễ tìm kiếm nhưng tốn chi phí duy trì 6 chỉ mục độc lập và chịu rủi ro lan truyền lỗi định tuyến (Routing Error Propagation) nếu Router chọn nhầm kho.}
+\paragraph{Phân tích độ trễ truy xuất khi quy mô kho tăng lớn.}
+Việc đặt thêm bộ định tuyến ở đầu quy trình làm tốn thêm một khoảng thời gian cố định $C$ cho mỗi câu hỏi, nhưng bù lại giúp giảm đáng kể số lượng phần tử phải tra cứu. Theo phân tích tại Mệnh đề~C.4 của~\cite{yeo2026universalrag}, giả sử hệ thống có $k > 1$ kho riêng biệt với kích thước đều bằng $N$, và gọi $T(m)$ là thời gian tìm kiếm trên một chỉ mục cỡ $m$. Cách gộp chung toàn bộ dữ liệu phải tìm trên kho cỡ $kN$ nên mất thời gian $T_{\mathrm{unified}} = T(kN)$, còn UniversalRAG mất $T_{\mathrm{routing}} = C + T(N)$ nếu truy vấn song song trên các kho được chọn. Với tìm kiếm vét cạn tuyến tính $T(m) = \Theta(m)$, tỷ lệ thời gian giữa hai phương pháp là:
+\begin{equation}
+    \frac{T_{\mathrm{unified}}}{T_{\mathrm{routing}}} \gtrsim \frac{kN}{N + C} = \frac{k}{1 + C/N} \;\xrightarrow{N \to \infty}\; \Theta(k)
+    \label{eq:ur_latency_linear}
+\end{equation}
+Ngay cả khi dùng thuật toán tìm láng giềng gần đúng (ANN) có độ phức tạp lý tưởng $T(m) = \Theta(\log m)$, tỷ số $T_{\mathrm{unified}} / T_{\mathrm{routing}} \gtrsim (\log N + \log k) / (\log N + C)$ vẫn tiến về giá trị không nhỏ hơn $1$ khi $N \to \infty$. Trên thực tế, khi tổng số mục dữ liệu vượt mốc 10 triệu đến 100 triệu phần tử, thời gian tiết kiệm được nhờ thu hẹp phạm vi tìm kiếm lớn hơn nhiều so với thời gian chạy một bộ định tuyến nhỏ như T5Gemma~2 270M~\cite{yeo2026universalrag}.
+
+\paragraph{Các đánh đổi kỹ thuật và dạng lỗi thường gặp.}
+Dù giải quyết tốt hiện tượng \textit{modality gap} và cho phép bổ sung kho dữ liệu mới mà không phải lập lại chỉ mục của các kho cũ, kiến trúc UniversalRAG vẫn có ba hạn chế cần lưu ý:
+\begin{itemize}
+    \item \textbf{Sai số lan truyền từ bước định tuyến:} Vì hệ thống chỉ tìm kiếm trong các kho được bộ định tuyến chọn, một quyết định phân loại sai ở bước đầu sẽ khiến bộ truy xuất phía sau không thể tiếp cận đúng tài liệu cần tìm. Thống kê các ca lỗi của GPT-5 tại Bảng~15 trong bài gốc~\cite{yeo2026universalrag} chỉ ra bốn kiểu nhầm lẫn điển hình: (i) chọn \texttt{No} thay vì \texttt{Paragraph} khi mô hình cho rằng câu hỏi đủ phổ thông để tự trả lời (trường hợp này không làm sai đáp án cuối nếu mô hình thực sự nhớ đúng kiến thức đó); (ii) nhầm giữa hai phương thức thị giác gần nhau, ví dụ câu hỏi \textit{``Who is seated to the right of Kobe in the Jimmy Kimmel tribute show?''} cần xem \texttt{Clip} nhưng bị gán sang \texttt{Image}; (iii) chọn lệch mức độ chi tiết (\texttt{Document} bị rút xuống \texttt{Paragraph}, hoặc \texttt{Video} bị rút xuống \texttt{Clip}); và (iv) thiếu nhánh trong câu hỏi liên phương thức (chỉ chọn \texttt{Paragraph} khi câu hỏi cần cả \texttt{Paragraph+Image}).
+    \item \textbf{Phụ thuộc vào nhãn huấn luyện gán tự động:} Như chính các tác giả nêu trong phần \textit{Limitations}, việc suy ra nhãn huấn luyện theo nguồn dữ liệu mặc định của từng bộ benchmark (hoặc nhờ GPT-4o phân tách câu hỏi clip/video) khó tránh khỏi nhãn nhiễu. Cách gán nhãn này cũng khiến bộ định tuyến có huấn luyện dễ học vẹt theo kiểu câu hỏi đặc trưng của từng tập dữ liệu, làm giảm độ chính xác khi gặp các tập câu hỏi ngoài phân phối~\cite{yeo2026universalrag}.
+    \item \textbf{Chi phí quản lý nhiều chỉ mục song song:} Thay vì vận hành một chỉ mục duy nhất, hệ thống phải duy trì cùng lúc 6 kho dữ liệu với các quy trình tiền xử lý và bộ mã hóa khác nhau (chia đoạn văn bản, cắt cảnh video bằng \texttt{PySceneDetect}, sinh chú thích phụ trợ). Với các ứng dụng có quy mô dữ liệu nhỏ, chi phí vận hành này cùng độ trễ cố định $C$ của bộ định tuyến có thể lớn hơn lợi ích thu được từ việc tách kho.
+\end{itemize}
