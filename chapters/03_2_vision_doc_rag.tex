@@ -7,60 +7,50 @@
 \label{sec:method_vision_doc}
 
 
-Sau khi hệ thống chọn kho, tầng truy xuất phải tìm đúng trang chứa
-chứng cứ. Hai phương pháp sau cùng dùng ảnh trang làm đơn vị truy
-xuất nhưng phân bổ tài nguyên khác nhau. ColPali dành nhiều vector
-cho các vùng ảnh để chấm điểm ở mức token. VisRAG-Ret dùng một vector
-để lưu mỗi trang, đồng thời VisRAG-Gen đánh giá cách bộ sinh đọc các
-ảnh đã lấy ra \cite{faysse2025colpali,yu2025visrag}. Phân biệt hai
-tầng là cần thiết vì khả năng xếp hạng và khả năng đọc ảnh được đo
-bằng những đầu ra khác nhau.
+Sau khi chọn kho, hệ thống phải tìm trang có thông tin để trả lời.
+ColPali và VisRAG đều tìm trực tiếp trên ảnh trang. ColPali lưu nhiều
+vector mỗi trang để từng token truy vấn có thể khớp với một vùng ảnh.
+VisRAG-Ret lưu một vector cho mỗi trang, còn VisRAG-Gen đọc các ảnh đã
+truy xuất để tạo câu trả lời \cite{faysse2025colpali,yu2025visrag}.
+Ở bước retrieval, ta kiểm tra trang đúng đứng ở đâu. Ở bước generation,
+ta kiểm tra mô hình có đọc đúng thông tin từ trang đó hay không.
 
-\subsection{Chuyển dịch mô hình: Truy xuất trong không gian thị giác (Page-as-Image)}
+\subsection{Page-as-Image trong truy xuất tài liệu PDF}
 \label{subsec:vision_paradigm}
 
-Trong tài liệu có bảng và biểu đồ, vị trí của tiêu đề, ô dữ liệu và chú
-giải góp phần xác định ý nghĩa của từng giá trị. Khi OCR và bước phân
-tích bố cục tách các thành phần này, chỉ mục có thể giữ đúng từ khóa
-nhưng mất quan hệ giữa chúng. ColPali và VisRAG mã hóa trực tiếp ảnh
-của từng trang và dùng trang làm đơn vị truy xuất. Cách này giữ bố cục
-trong đầu vào của bộ mã hóa \cite{faysse2025colpali,yu2025visrag}.
+Trong tài liệu PDF, bố cục giúp người đọc hiểu ý nghĩa của số liệu.
+Một ô trong bảng cần được đọc cùng tiêu đề hàng, tiêu đề cột và đơn vị.
+Với biểu đồ, nhãn trục và chú giải cho biết số liệu thuộc thời điểm
+hoặc nhóm nào. Với Page-as-Image, ColPali và VisRAG dùng ảnh của cả
+trang PDF làm đầu vào cho bộ mã hóa và giữ bố cục trong ảnh. Khi có
+câu hỏi, bộ truy xuất xếp hạng các trang theo mức độ liên quan
+\cite{faysse2025colpali,yu2025visrag}.
 
-\subsubsection{Chứng cứ thị giác trong báo cáo PDF}
+\subsubsection{Ví dụ đọc thông tin từ bảng và biểu đồ trong PDF}
 
-Xét câu hỏi trong bài trình bày về mức tăng doanh thu Quý 4 so với
-Quý 3. Giả sử biểu đồ ghi 80 tỷ đồng ở Quý 3 và 100 tỷ đồng ở Quý 4.
-Sau khi gắn đúng mỗi con số với quý tương ứng, phép tính
-$(100-80)/80=25\%$ cho mức tăng. Nếu OCR đọc đủ hai số nhưng mất thứ
-tự của nhãn dưới trục, mô hình có thể lấy nhầm mốc gốc. Với bảng,
-ngay cả khi đọc từng ô đúng, một giá trị bị tách khỏi cột hoặc đơn vị
-vẫn có thể dẫn đến kết luận sai. Các mối liên hệ vị trí vì vậy là
-một phần của dữ liệu đầu vào.
+Giả sử một biểu đồ trong báo cáo cho thấy doanh thu quý 3 là 80 tỷ
+đồng và doanh thu quý 4 là 100 tỷ đồng. Nhãn dưới mỗi cột cho biết số
+liệu thuộc quý nào. Lấy doanh thu quý 3 làm mốc so sánh, ta có
+\[
+    \frac{100-80}{80}\times100\% = 25\%.
+\]
+Văn bản trích xuất có thể chứa cả hai con số nhưng thiếu thông tin
+cho biết số nào thuộc quý nào. Khi đó hệ thống dễ lấy nhầm mốc so
+sánh. Với bảng, đọc đúng một con số vẫn chưa đủ. Nó phải đi cùng
+đúng hàng, cột và đơn vị.
 
-Một cấu hình TextRAG có thể dùng công cụ phân tích bố cục để phát hiện
-đoạn, hình và bảng. OCR trích các vùng ký tự, mô hình tạo mô tả ảnh
-bổ sung nội dung thị giác, rồi hệ thống phân đoạn và lập chỉ mục văn
-bản. Có thể gán điểm cho trang bằng điểm lớn nhất trong các đoạn của
-nó. Phép lấy cực đại này hoạt động trên điểm nguyên đoạn. MaxSim
-trong ColPali lại lấy một cực đại cho mỗi token truy vấn
-\cite{faysse2025colpali}.
+Một cấu hình TextRAG có thể phân tích bố cục trang (layout parsing),
+dùng OCR để nhận dạng ký tự và tạo mô tả cho hình ảnh (captioning).
+Sau đó, hệ thống chia văn bản thành các đoạn (chunks) để lập chỉ mục. Một cách xếp hạng
+trang là lấy điểm của đoạn khớp nhất trong trang đó. ColPali tính
+MaxSim ở mức token truy vấn, như trình bày ở
+Mục~\ref{subsec:colpali} \cite{faysse2025colpali}.
 
-Ảnh trang giữ vị trí tương đối của giá trị, nhãn và chú thích. Những
-tín hiệu đi vào mô hình còn phụ thuộc độ phân giải và chất lượng bản
-quét. Trang hai cột có cỡ chữ nhỏ có thể mất chi tiết nếu bị thu nhỏ.
-Với PDF có lớp văn bản sạch và truy vấn cần khớp chuỗi chính xác,
-chỉ mục từ khóa vẫn là đối chứng cần thiết. Lựa chọn biểu diễn nên
-dựa vào kiểu chứng cứ mà truy vấn yêu cầu, ví dụ mã tài liệu, một
-ô bảng hay xu hướng trên biểu đồ.
+Truy xuất bằng ảnh trang giúp giữ vị trí của giá trị, nhãn và chú thích. Khả năng đọc các chi tiết này vẫn phụ thuộc vào độ phân giải và chất lượng bản quét. Trang có chữ nhỏ có thể mất chi tiết khi bị thu nhỏ. Với PDF có lớp văn bản rõ và câu hỏi cần tìm đúng một mã tài liệu, tìm kiếm theo từ khóa vẫn là một đối chứng phù hợp.
 
-Có hai điểm kiểm tra trong pipeline. Thứ nhất là trang đúng có xuất
-hiện trong top-$k$ hay không. Thứ hai là bộ sinh có xác định, đọc và
-diễn giải đúng vùng chứng cứ trong những trang đã nhận hay không.
-Chỉ số truy xuất đo bước đầu. Để quy lỗi cho bước sau, cần biết bộ
-sinh đã được cấp trang nào và ở định dạng nào. Việc tách hai bước
-sẽ được dùng khi đọc thí nghiệm VisRAG ở Chương~\ref{chap:experiments}.
+Khi đánh giá hệ thống, cần kiểm tra hai bước. Ở bước truy xuất, ta xem top-$k$ có chứa trang cần thiết hay không. Ở bước tạo câu trả lời, ta xem mô hình có đọc và diễn giải đúng thông tin trên các trang nhận được hay không. Cách kiểm tra này được dùng để phân tích kết quả của VisRAG ở Chương~\ref{chap:experiments}.
 
-\subsection{Nhánh Biểu diễn đa vector và Late Interaction -- ColPali}
+\subsection{ColPali với Multi-vector Embeddings và Late Interaction}
 \label{subsec:colpali}
 
 \subsubsection{Kiến trúc mô hình và luồng xử lý}
@@ -73,7 +63,7 @@ gian \cite{faysse2025colpali}.
 
 
 Cấu hình tham chiếu dùng ảnh $448\times448$ pixel với lưới
-$32\times32$ mảnh. Bộ mã hóa SigLIP tạo 1024 token ảnh. Gemma-2B
+$32\times32$ patch. Bộ mã hóa SigLIP tạo 1024 token ảnh. Gemma-2B
 xử lý chuỗi token ảnh cùng sáu token của lời nhắc mô tả ảnh, rồi
 lớp chiếu tuyến tính tạo khoảng $1030\times128$ giá trị cho mỗi trang.
 Các token của vùng ảnh có thể được gắn trở lại vị trí lưới. Khi lập
@@ -83,19 +73,18 @@ ngược về ảnh gốc \cite{faysse2025colpali}.
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{figures/tv2/colpali-pipeline.png}
-    \caption[Quy trình truy xuất truyền thống và ColPali]{Lập chỉ mục và truy vấn ở pipeline truyền thống và ColPali. Nguồn: Hình 1 của \cite{faysse2025colpali}, dùng ở slide 7.}
+    \caption[Quy trình truy xuất truyền thống và ColPali]{Lập chỉ mục và truy vấn ở pipeline truyền thống và ColPali. Nguồn: \cite{faysse2025colpali}.}
     \label{fig:tv2_colpali_pipeline}
 \end{figure}
 
-Hình~\ref{fig:tv2_colpali_pipeline} phân biệt hai thời điểm xử lý.
-Ngoại tuyến, ảnh trang đi vào bộ mã hóa thị giác và được lập chỉ mục
-trước khi có câu hỏi. Trực tuyến, mô hình mã hóa câu hỏi đến sau.
-Bài gốc nối thêm năm token \texttt{<unused0>} vào truy vấn để mô hình
-học mở rộng hoặc điều chỉnh trọng số của câu hỏi. Khi bổ sung trang
-mới, hệ thống chỉ lập chỉ mục cho phần mới nếu giữ nguyên mô hình
-và quy tắc kết xuất. Đổi checkpoint hoặc độ phân giải cần theo dõi
-phiên bản biểu diễn để duy trì tính tương thích của chỉ mục
-\cite{faysse2025colpali,khattab2020colbert}.
+Hình~\ref{fig:tv2_colpali_pipeline} tách bước lập chỉ mục khỏi bước
+tìm kiếm. Hệ thống mã hóa ảnh và lập chỉ mục trước khi có câu hỏi.
+Khi nhận truy vấn, ColPali nối thêm năm token \texttt{<unused0>} rồi
+mới mã hóa. Các token này giúp mô hình học cách mở rộng hoặc điều
+chỉnh trọng số của truy vấn. Khi thêm trang mà vẫn dùng cùng mô hình
+và quy tắc kết xuất, chỉ cần mã hóa phần mới. Nếu đổi checkpoint hoặc
+độ phân giải, cần theo dõi phiên bản embedding để giữ chỉ mục nhất
+quán \cite{faysse2025colpali,khattab2020colbert}.
 
 \subsubsection{Toán tử Late Interaction (MaxSim) và hàm mất mát}
 
@@ -124,36 +113,37 @@ Các token có thể khớp tại những vùng rời nhau. Tên một công ty 
 thể nằm ở phần văn bản trong khi tỷ lệ tăng trưởng trên cùng trang
 thuộc công ty khác. Điểm MaxSim cao giúp ưu tiên kiểm tra trang.
 Bộ đọc còn phải xác minh số liệu thực sự gắn với công ty được hỏi.
-Về tính toán, chấm điểm trực tiếp một cặp truy vấn--trang cần
-$N_qN_d$ tích vô hướng trên vector $D$ chiều. Chi phí tăng theo số
-token và số ứng viên cần chấm. Khi triển khai ở quy mô lớn, cấu
-hình nén và cơ chế lấy ứng viên cần được tính vào phép đo.
+Mỗi cặp truy vấn--trang cần $N_qN_d$ tích vô hướng trên vector $D$
+chiều nếu chấm trực tiếp. Càng nhiều token hoặc ứng viên, MaxSim
+càng phải tính nhiều. Khi đo trên kho lớn, cần ghi rõ số ứng viên
+được chấm và cách nén vector.
 
-\paragraph{Huấn luyện với trang âm khó.}
-Với một lô $B$ cặp $(q_i,d_i)$, ColPali dùng những trang gắn với
-các truy vấn khác làm ứng viên âm. Cho $s_i^+$ là điểm của trang
-đúng và $s_i^-$ là điểm cao nhất trong các trang âm cùng lô,
+\paragraph{Hard negatives trong ColPali.}
+Với một batch gồm $B$ cặp $(q_i,d_i)$, ColPali dùng các trang của
+những truy vấn khác làm in-batch negatives. Gọi $s_i^+$ là điểm của
+trang liên quan và $s_i^-$ là điểm của negative được xếp cao nhất.
+Hàm mất mát so sánh hai điểm như sau.
 \begin{equation}
     \mathcal{L}_{\mathrm{ColPali}} =
     \frac{1}{B}\sum_{i=1}^{B}\log\bigl(1+\exp(s_i^- - s_i^+)\bigr).
     \label{eq:tv2_colpali_loss}
 \end{equation}
-Khi trang âm xếp trên trang đúng, hiệu $s_i^- - s_i^+$ và mức phạt
-tăng. Nếu trang âm chứa một bản sao của cùng bảng, mô hình có
-thể nhận tín hiệu phạt dù trang đó có chứng cứ hữu ích. Cần xem xét
+Khi hard negative xếp trên trang liên quan, hiệu $s_i^- - s_i^+$
+và mức phạt tăng. Nếu negative chứa một bản sao của cùng bảng, mô hình
+có thể nhận tín hiệu phạt dù trang đó hữu ích. Cần xem xét
 chất lượng nhãn khi áp dụng chiến lược này vào kho nhiều phiên bản
 tài liệu.
 
-Tập huấn luyện của bài gốc chứa 118\,695 cặp truy vấn--trang. Khoảng
+Tập huấn luyện của ColPali chứa 118\,695 cặp truy vấn--trang. Khoảng
 63\% đến từ dữ liệu học thuật công khai và 37\% là cặp tổng hợp từ
 PDF. Nhóm tác giả dùng truy vấn tiếng Anh và kiểm tra để cùng một PDF
 nhiều trang không xuất hiện trong cả tập huấn luyện lẫn tập đánh giá. Cấu hình tham chiếu
-huấn luyện một epoch, dùng LoRA hạng 32 và hệ số 32 ở phần ngôn ngữ,
+huấn luyện 1 epoch với LoRA ($r=32$, $\alpha=32$) ở phần ngôn ngữ,
 cùng lớp chiếu mới khởi tạo. Bộ mã hóa ảnh được mở khóa trong một
 thí nghiệm khác, xem kết quả ở Mục~\ref{subsec:tv2_ablation}
 \cite{faysse2025colpali}.
 
-\subsubsection{Đọc bản đồ tương đồng của truy vấn}
+\subsubsection{Đọc similarity heatmap của truy vấn}
 
 Các điểm $\langle\mathbf{q}_i,\mathbf{d}_j\rangle$ của một token có
 thể được đặt trở lại lưới ảnh. Hình~\ref{fig:tv2_colpali_heatmap}
@@ -165,17 +155,13 @@ Kashagan, một mỏ dầu ở Kazakhstan \cite{faysse2025colpali}.
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.72\textwidth]{figures/tv2/colpali-heatmap.png}
-    \caption[Bản đồ tương đồng của token hour]{Tương đồng theo mảnh ảnh đối với token \textit{hour}. Nguồn: phần bên phải Hình 3 trong \cite{faysse2025colpali}, dùng ở slide 7.}
+    \caption[Bản đồ tương đồng của token hour]{Tương đồng theo mảnh ảnh đối với token \textit{hour}. Nguồn: \cite{faysse2025colpali}.}
     \label{fig:tv2_colpali_heatmap}
 \end{figure}
 
-Các vùng sáng giải thích phần nào lý do trang nhận điểm truy xuất
-cao. Muốn trả lời giờ có tổng sản lượng lớn nhất, bộ đọc còn cần
-tìm cột cao nhất, xác định đúng số giờ trên trục và đọc phạm vi của
-biểu đồ. Heatmap hữu ích để kiểm tra chứng cứ mà retriever ưu tiên.
-Cần đối chiếu riêng nội dung trả lời do bộ sinh đưa ra.
+Các vùng sáng giải thích phần nào lý do trang nhận điểm truy xuất cao. Muốn trả lời giờ có tổng sản lượng lớn nhất, bộ đọc còn cần tìm cột cao nhất, xác định đúng số giờ trên trục và đọc phạm vi của biểu đồ. Heatmap hữu ích để kiểm tra chứng cứ mà retriever ưu tiên. Cần đối chiếu riêng nội dung trả lời do bộ sinh đưa ra.
 
-\subsection{Nhánh Biểu diễn đơn vector và Tạo sinh đầu--cuối -- VisRAG}
+\subsection{VisRAG với Single-vector Embeddings và End-to-End RAG}
 \label{subsec:visrag}
 
 \subsubsection{Bộ truy xuất VisRAG-Ret và Position-weighted Mean Pooling}
@@ -187,20 +173,20 @@ thành một vector với trọng số tăng theo vị trí
     \mathbf{e}=\sum_{i=1}^{n}\frac{i}{\sum_{j=1}^{n}j}\,\mathbf{h}_i.
 \end{equation}
 Các token ở cuối chuỗi có thể tiếp nhận nhiều ngữ cảnh trước đó hơn
-dưới cơ chế chú ý nhân quả. Điểm truy xuất là độ tương đồng cosine
+nhờ cơ chế causal attention. Điểm truy xuất là cosine similarity
 giữa vector truy vấn và vector trang \cite{yu2025visrag}.
 
 
 Với bốn vị trí, trọng số gộp lần lượt là $0{,}1$, $0{,}2$, $0{,}3$
 và $0{,}4$. Hệ thống thu được một vector 2304 chiều cho mỗi trang.
 Khi hai vector đã chuẩn hóa theo chuẩn Euclid, cosine tương đương
-tích vô hướng. Dữ liệu có thể đưa vào chỉ mục vector để tìm láng
-giềng gần đúng. Đổi tham số tìm kiếm có thể giảm độ trễ nhưng cũng
+tích vô hướng. Chỉ mục vector có thể dùng Approximate Nearest
+Neighbor (ANN) search. Đổi tham số tìm kiếm có thể giảm độ trễ nhưng cũng
 loại trang liên quan khỏi danh sách ứng viên. Vì thế cần đo tỷ lệ
 giữ lại trang đúng khi đánh giá tốc độ ở quy mô lớn.
 
-Với truy vấn $q_i$, tập $D_i^-$ gồm các trang âm trong lô, còn
-$d_i^+$ là trang dương. InfoNCE có dạng
+Với truy vấn $q_i$, tập $D_i^-$ gồm các in-batch negatives,
+còn $d_i^+$ là trang liên quan. InfoNCE có dạng
 \begin{equation}
     \ell_i=-\log
     \frac{\exp(s(q_i,d_i^+)/\tau)}
@@ -208,8 +194,8 @@ $d_i^+$ là trang dương. InfoNCE có dạng
       \sum_{d\in D_i^-}\exp(s(q_i,d)/\tau)}.
     \label{eq:tv2_visrag_loss}
 \end{equation}
-Các trang âm có điểm cao đóng góp nhiều hơn trong mẫu số.
-VisRAG huấn luyện một epoch với lô 128 và $\tau=0{,}02$. Dữ liệu
+Các negative có điểm cao đóng góp nhiều hơn trong mẫu số.
+VisRAG huấn luyện 1 epoch với batch size 128 và $\tau=0{,}02$. Dữ liệu
 kết hợp sáu tập hỏi đáp trực quan với các cặp tổng hợp từ giáo
 trình, bài báo và tài liệu hướng dẫn. Một câu như “màu đường
 thứ hai trong hình này là gì?” có thể được trả lời khi trang đã
@@ -225,29 +211,20 @@ hoặc tạo câu trả lời riêng cho từng trang rồi chọn theo điểm 
 nhiều ảnh, hệ thống đưa các trang riêng vào cùng một lượt suy luận
 \cite{yu2025visrag}.
 
-Hình~\ref{fig:tv2_visrag_pipeline} minh họa câu hỏi về sự thay đổi độ
-nhạy tần số từ đáy đến đỉnh ốc tai. Văn bản trích xuất chứa nhiều
-giá trị Hz rời rạc. Sơ đồ gốc giữ vị trí của từng nhãn số tương
-ứng cấu trúc giải phẫu, cho phép đọc được xu hướng giảm dần. Ví dụ
-cho thấy phần lớn ký tự vẫn có thể xuất hiện trong văn bản mà
-chứng cứ cần cho câu hỏi đã bị mất một phần \cite{yu2025visrag}.
+Hình~\ref{fig:tv2_visrag_pipeline} minh họa câu hỏi về sự thay đổi độ nhạy tần số từ đáy đến đỉnh ốc tai. Văn bản trích xuất chứa nhiều giá trị Hz rời rạc. Sơ đồ gốc giữ vị trí của từng nhãn số tương ứng cấu trúc giải phẫu, cho phép đọc được xu hướng giảm dần. Ví dụ cho thấy phần lớn ký tự vẫn có thể xuất hiện trong văn bản mà chứng cứ cần cho câu hỏi đã bị mất một phần \cite{yu2025visrag}.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{figures/tv2/visrag-pipeline.png}
-    \caption[Luồng xử lý của TextRAG và VisRAG]{Luồng xử lý của TextRAG và VisRAG trong ví dụ sơ đồ ốc tai. Nguồn: Hình 2 của \cite{yu2025visrag}, dùng ở slide 8.}
+    \caption[Luồng xử lý của TextRAG và VisRAG]{Luồng xử lý của TextRAG và VisRAG trong ví dụ sơ đồ ốc tai. Nguồn: \cite{yu2025visrag}.}
     \label{fig:tv2_visrag_pipeline}
 \end{figure}
 
-\paragraph{Ghép trang.}
-Các trang được ghép ngang thành một ảnh. MiniCPM-V~2.0 đọc
-ảnh ghép trong một lượt. Nếu ảnh ghép phải thu nhỏ,
-chữ nhỏ và các ô ở sát nhau khó phân biệt hơn. Cấu hình ghép còn
-đặt các trang liền kề dù chúng có thể nằm ở những phần khác nhau
-của tài liệu.
+\paragraph{Page Concatenation.}
+Các trang được ghép ngang thành một ảnh. MiniCPM-V~2.0 đọc ảnh ghép trong một lượt. Nếu ảnh ghép phải thu nhỏ, chữ nhỏ và các ô ở sát nhau khó phân biệt hơn. Cấu hình ghép còn đặt các trang liền kề dù chúng có thể nằm ở những phần khác nhau của tài liệu.
 
-\paragraph{Chọn đáp án có trọng số.}
-Weighted Selection tạo ứng viên $a_d$ từ từng trang, sau đó chọn
+\paragraph{Weighted Selection.}
+Mô hình tạo câu trả lời $a_d$ từ từng trang, sau đó chọn
 theo điểm
 \begin{equation}
     S(a_d,q,d)=g(a_d\mid q,d)
@@ -262,7 +239,7 @@ thể chọn được trang hữu ích khi thông tin nằm gọn trên một �
 Nếu câu hỏi cần lấy số liệu từ hai trang, hai câu trả lời riêng
 có thể đều thiếu một phần chứng cứ \cite{yu2025visrag}.
 
-\paragraph{Đọc nhiều ảnh.}
+\paragraph{Multi-image VLM.}
 MiniCPM-V 2.6 và GPT-4o có thể nhận từng ảnh trong cùng một lượt.
 Ví dụ, một trang chứa bảng doanh thu và trang kế tiếp ghi đơn
 vị quy đổi. Đưa cả hai ảnh vào cho phép đối chiếu giá trị với đơn
@@ -283,9 +260,9 @@ khôi phục chứng cứ bị thiếu \cite{yu2025visrag}.
 Trong ví dụ LinkedIn ở Bảng 9, cả hai cấu hình đều tìm đúng
 infographic. TextRAG trả 49\%, tỷ lệ của Bắc Mỹ, dù truy vấn hỏi
 về châu Âu. VisRAG đọc đúng 53\% từ vị trí của nhãn châu Âu.
-Ví dụ này định vị lỗi ở bước biểu diễn ngữ cảnh hoặc đọc chứng cứ.
-Nó giải thích vì sao Recall@1 giống nhau ở một truy vấn vẫn có
-thể đi cùng kết quả tạo sinh khác nhau \cite{yu2025visrag}.
+Lỗi xảy ra sau khi đã tìm đúng trang, ở bước chuẩn bị hoặc đọc
+ngữ cảnh. Cả hai phương án đều tìm đúng trang ở hạng đầu nên có cùng
+Recall@1 cho câu hỏi này, dù đáp án khác nhau \cite{yu2025visrag}.
 
 \subsection{So sánh đối chứng chuyên sâu: ColPali và VisRAG}
 \label{subsec:colpali_vs_visrag}
@@ -319,12 +296,12 @@ Dữ liệu \& Huấn luyện & Cặp truy vấn--trang, mẫu âm trong batch &
 Dung lượng trong Bảng~\ref{tab:colpali_vs_visrag} là kích thước biểu
 diễn trang tương ứng với cấu hình của từng bài \cite{faysse2025colpali,yu2025visrag}. Biểu diễn
 đa vector giữ tín hiệu ở nhiều vùng của trang. Biểu diễn đơn vector
-giảm bộ nhớ cần để lưu dữ liệu và đơn giản hóa khâu so khớp.
+cần ít bộ nhớ hơn và chấm điểm bằng cosine similarity.
 
 Với hai byte cho mỗi giá trị, ColPali cần
 $1030\times128\times2=263\,680$ byte mỗi trang, tương đương
 257,5\,KiB. Vector 2304 chiều cần 4608 byte, tức 4,5\,KiB.
-Bảng dùng ký hiệu KB như slide và hai bài. Chênh lệch khoảng
+Bảng giữ ký hiệu KB theo hai nghiên cứu. Chênh lệch khoảng
 57,2 lần áp dụng cho biểu diễn chưa nén. Với một triệu trang,
 hai mức này lần lượt xấp xỉ 245,6\,GiB và 4,3\,GiB trước khi
 tính cấu trúc chỉ mục, metadata, ảnh tài liệu và bộ nhớ mô hình.
@@ -335,11 +312,9 @@ Trên kho báo cáo dày chữ, cần kiểm tra khả năng giữ đúng trang
 có bảng và khả năng nén chỉ mục mà không mất vùng chữ nhỏ. Trên
 kho lớn và đa dạng, chỉ mục vector đơn thuận tiện để thử tìm kiếm
 ứng viên. Các kết quả theo từng tập ở Mục~\ref{subsec:tv2_visrag_ret_results}
-cho thấy DocVQA, SlideVQA, InfoVQA và PlotQA tạo ra những thứ
-hạng khác nhau. Quyết định triển khai nên dựa vào cơ cấu truy vấn
-thực tế, chẳng hạn tìm mã định danh, đọc bảng hay giải thích đồ thị.
+cho thấy thứ hạng của hai phương pháp thay đổi giữa DocVQA, SlideVQA,
+InfoVQA và PlotQA. Vì vậy, phép đánh giá nên phản ánh loại câu hỏi
+người dùng thường gặp, như tìm mã định danh, đọc bảng hay giải thích
+biểu đồ.
 
-Có thể dùng vector đơn chọn $m$ ứng viên rồi dùng MaxSim xếp
-hạng lại. Khi đó cần lưu thêm vector hoặc mã hóa lại ảnh ứng
-viên. Recall của top-$m$ là giới hạn của bước xếp hạng lại.
-Mục~\ref{subsec:tv2_protocol} đề xuất cách đo khi kết hợp hai tầng.
+Có thể dùng vector đơn chọn $m$ ứng viên rồi dùng MaxSim xếp hạng lại. Khi đó cần lưu thêm vector hoặc mã hóa lại ảnh ứng viên. Recall của top-$m$ là giới hạn của bước xếp hạng lại. Mục~\ref{subsec:tv2_protocol} đề xuất cách đo khi kết hợp hai tầng.
